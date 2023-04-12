@@ -11,3 +11,6 @@ const checkEnv = (enVar) => {
 
 export const PORT = checkEnv("PORT");
 export const MONGODB = checkEnv("MONGODB");
+export const CLOUD_NAME = checkEnv("CLOUD_NAME");
+export const API_KEY = checkEnv("API_KEY");
+export const API_SECRET = checkEnv("API_SECRET");

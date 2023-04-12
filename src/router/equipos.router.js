@@ -1,6 +1,6 @@
 import express from "express";
 import { EquiposDataBase } from "../controllers/equipos.js";
-import { uploader } from '../utils.js'
+import { uploader } from '../utils.js';
 
 const router = express.Router();
 const equiposDatabase = new EquiposDataBase()
@@ -53,8 +53,7 @@ router.post("/", uploader.single("logo"), async (req, res) => {
             gol_partido,
             jugadores
         } = req.body;
-        const logoUrl = req?.file?.filename;
-        const newLogo = logoUrl ? `http://localhost:8080/images/${logoUrl}` : '';
+        
         const newEquipo = await equiposDatabase.addEquipo(
             name,
             partidosJugados,
@@ -66,7 +65,7 @@ router.post("/", uploader.single("logo"), async (req, res) => {
             diferencia_de_Goles,
             puntos,
             last5,
-            newLogo,
+            logo,
             puntaje_anterior,
             foto_equipo,
             banco_fondo,
@@ -81,9 +80,9 @@ router.post("/", uploader.single("logo"), async (req, res) => {
             jugadores
         );
 
-        return res.status(201).send({ status: 'Succes', message: 'Se creó el equipo correctamente', product: newEquipo });
+        return res.status(201).send({ status: 'Succes', message: 'Se creó el equipo correctamente', equipo: newEquipo });
     } catch (err) {
-        return res.status(400).send({ status: "Error", error: err.message });
+        return res.status(400).send({ status: "Error", message : err.message });
     }
 });
 
