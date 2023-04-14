@@ -14,3 +14,6 @@ export const MONGODB = checkEnv("MONGODB");
 export const CLOUD_NAME = checkEnv("CLOUD_NAME");
 export const API_KEY = checkEnv("API_KEY");
 export const API_SECRET = checkEnv("API_SECRET");
+
+export const EMAIL_PASSWORD = checkEnv("EMAIL_PASSWORD");
+export const EMAIL_USERNAME = checkEnv("EMAIL_USERNAME");

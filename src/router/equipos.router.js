@@ -52,6 +52,7 @@ router.post("/", uploader.single("logo"), async (req, res) => {
             estadio,
             gol_partido,
             estado,
+            correo,
             jugadores
         } = req.body;
         
@@ -79,6 +80,7 @@ router.post("/", uploader.single("logo"), async (req, res) => {
             estadio,
             gol_partido,
             estado,
+            correo,
             jugadores
         );
 

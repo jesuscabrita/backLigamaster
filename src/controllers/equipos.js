@@ -1,6 +1,7 @@
-import { API_KEY, API_SECRET, CLOUD_NAME } from "../config.js";
+import { API_KEY, API_SECRET, CLOUD_NAME, EMAIL_PASSWORD, EMAIL_USERNAME } from "../config.js";
 import { equiposModel } from "../models/equipos.model.js";
 import { v2 as cloudinary } from 'cloudinary';
+import nodemailer from 'nodemailer';
 
 cloudinary.config({
     cloud_name: CLOUD_NAME,
@@ -9,7 +10,7 @@ cloudinary.config({
 });
 
 export class EquiposDataBase {
-    constructor() {}
+    constructor() { }
 
     getEquipos = async (limit) => {
         try {
@@ -36,64 +37,116 @@ export class EquiposDataBase {
         const nameEquipo = equipos.some(equipo => equipo.name === name);
         return nameEquipo;
     }
+    
+    enviarCorreo = async (equipo) => {
+    
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            auth: {
+                user: EMAIL_USERNAME,
+                pass: EMAIL_PASSWORD
+            },
+            tls: { rejectUnauthorized: false }
+        });
 
-    validateEquiposData(name) {
+        // Configurar correo electrónico
+        const correo = {
+            from: '"La liga 👻" <jesusarnaldo115@gmail.com>',
+            to: equipo.correo,
+            subject: `Nuevo equipo : "${equipo.name}"`,
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            /* Agrega estilos CSS aquí */
+                        </style>
+                    </head>
+                    <body>
+                        <p>Estimados miembros del equipo,</p>
+                        <p>Es un placer darles la bienvenida a nuestro torneo de fútbol. Hemos recibido su solicitud para participar y nos complace informarles que su equipo ha sido registrado para el torneo.</p>
+                        <p>Sin embargo, antes de confirmar su inscripción, necesitamos verificar algunos detalles adicionales. Por favor, asegúrese de que toda la información proporcionada sea correcta. Una vez que hayamos verificado la información, le confirmaremos la inscripción de su equipo.</p>
+                        <p>Mientras tanto, nos gustaría compartir con ustedes nuestro logotipo y algunos iconos para su uso en sus correos electrónicos. Por favor, no dude en contactarnos si tiene alguna pregunta o preocupación.</p>
+                        <p>¡Gracias por unirse a nosotros y esperamos tener una temporada emocionante juntos!</p>
+                        <p>Saludos cordiales,</p>
+                        <p style="display:flex; alignItems:center";>"${equipo.name}" <img style="height: 20px" src=${equipo.logo} alt="iconos de La liga"></p>
+                        <img style="height: 40px" src="https://logodownload.org/wp-content/uploads/2018/05/laliga-logo-1.png" alt="iconos de La liga">
+                    </body>
+                </html>
+            `
+        };
+        
+
+        // Enviar correo electrónico
+        try {
+            const info = await transporter.sendMail(correo);
+            console.log(`Correo electrónico enviado: ${info.messageId}`);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    
+    validateEquiposData(name, correo) {
         if (!name) {
             throw new Error("El nombre del equipo es requerido");
+        }
+        if (!correo) {
+            throw new Error("El correo del equipo es requerido");
         }
     }
 
     addEquipo = async (
-        name, 
-        partidosJugados, 
-        ganados, 
-        empates, 
-        perdidos, 
-        goles_a_Favor, 
-        goles_en_Contra, 
-        diferencia_de_Goles, 
-        puntos, last5, 
-        logo, 
-        puntaje_anterior, 
-        foto_equipo, 
-        banco_fondo, 
-        tarjetasAmarillas, 
-        tarjetasRojas, 
-        director_tecnico, 
-        delegado, 
-        fecha, 
-        arbitro, 
-        estadio, 
-        gol_partido, 
+        name,
+        partidosJugados,
+        ganados,
+        empates,
+        perdidos,
+        goles_a_Favor,
+        goles_en_Contra,
+        diferencia_de_Goles,
+        puntos, last5,
+        logo,
+        puntaje_anterior,
+        foto_equipo,
+        banco_fondo,
+        tarjetasAmarillas,
+        tarjetasRojas,
+        director_tecnico,
+        delegado,
+        fecha,
+        arbitro,
+        estadio,
+        gol_partido,
         estado,
+        correo,
         jugadores
-        ) => {
-        this.validateEquiposData(name);
+    ) => {
+        this.validateEquiposData(name, correo);
         const equipos = await this.getEquipos();
         const nameEquipo = await this.checkEquipoName(name)
         if (nameEquipo) {
             throw new Error(`El equipo "${name}" ya existe`);
         }
-        
+
         let newLogoUrl;
         if (logo) {
-        const result = await cloudinary.uploader.upload(logo);
-        newLogoUrl = result.secure_url;
+            const result = await cloudinary.uploader.upload(logo);
+            newLogoUrl = result.secure_url;
         } else {
-        newLogoUrl = '';
+            newLogoUrl = '';
         }
 
         const newEquipo = {
             name: name.trim(),
             partidosJugados: 0,
-            ganados: 0, 
-            empates: 0, 
-            perdidos: 0, 
-            goles_a_Favor: 0, 
+            ganados: 0,
+            empates: 0,
+            perdidos: 0,
+            goles_a_Favor: 0,
             goles_en_Contra: 0,
             diferencia_de_Goles: 0,
             puntos: 0,
-            last5: ["neutral","neutral","neutral","neutral","neutral"],
+            last5: ["neutral", "neutral", "neutral", "neutral", "neutral"],
             logo: newLogoUrl,
             puntaje_anterior: 0,
             foto_equipo: "",
@@ -101,27 +154,30 @@ export class EquiposDataBase {
             tarjetasAmarillas: 0,
             tarjetasRojas: 0,
             director_tecnico: [],
-            delegado:{},
+            delegado: {},
             fecha: ["No definido",
-                    "No definido", 
-                    "No definido",
-                    "No definido",
-                    "No definido",
-                    "No definido",
-                    "No definido",
-                    "No definido",
-                    "No definido",
-                    "No definido",
-                    "No definido",
-                    "No definido",
-                    "No definido"
-                ],
-            arbitro:'',
-            estadio:'',
-            gol_partido: [0,0,0,0,0,0,0,0,0,0,0,0,0],
-            estado:'enCola',
-            jugadores:[]
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido"
+            ],
+            arbitro: '',
+            estadio: '',
+            gol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            estado: 'enCola',
+            correo: correo.trim(),
+            jugadores: []
         }
+        
+        await this.enviarCorreo(newEquipo);
 
         equipos?.push(newEquipo)
         await equiposModel.create(newEquipo)
@@ -158,10 +214,10 @@ export class EquiposDataBase {
         // if (Object.keys(changes).length === 1 && changes.estado) {
         //     return "Se cambió el estado exitosamente";
         // }
-        
+
         equipos[equipoIndex] = updatedProduct;
 
-        await  equiposModel.updateOne({ _id: id },{ $set: updatedProduct })
+        await equiposModel.updateOne({ _id: id }, { $set: updatedProduct })
 
         return updatedProduct;
     }
