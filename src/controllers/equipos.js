@@ -65,6 +65,7 @@ export class EquiposDataBase {
         arbitro, 
         estadio, 
         gol_partido, 
+        estado,
         jugadores
         ) => {
         this.validateEquiposData(name);
@@ -118,6 +119,7 @@ export class EquiposDataBase {
             arbitro:'',
             estadio:'',
             gol_partido: [0,0,0,0,0,0,0,0,0,0,0,0,0],
+            estado:'enCola',
             jugadores:[]
         }
 
@@ -125,5 +127,42 @@ export class EquiposDataBase {
         await equiposModel.create(newEquipo)
 
         return newEquipo;
+    }
+
+    editarEquipo = async (id, changes) => {
+        const equipos = await this.getEquipos();
+        const equipoIndex = equipos.findIndex((equipo) => equipo._id == id);
+
+        if (equipoIndex === -1) {
+            throw new Error(`No se encontró el equipo con ID ${id}`);
+        }
+
+        const updatedProduct = {
+            ...equipos[equipoIndex],
+            ...changes,
+            // partidosJugados: parseFloat(changes.partidosJugados),
+            // ganados: parseInt(changes.ganados),
+            // empates: parseInt(changes.empates),
+            // perdidos: parseInt(changes.perdidos),
+            // goles_a_Favor: parseInt(changes.goles_a_Favor),
+            // goles_en_Contra: parseInt(changes.goles_en_Contra),
+            // diferencia_de_Goles: parseInt(changes.diferencia_de_Goles),
+            // puntos: parseInt(changes.puntos),
+            // puntaje_anterior: parseInt(changes.puntaje_anterior),
+            // banco_fondo: parseInt(changes. banco_fondo),
+            // tarjetasAmarillas: parseInt(changes.tarjetasAmarillas),
+            // tarjetasRojas: parseInt(changes.tarjetasRojas),
+            // gol_partido: changes.gol_partido.map((gol) => parseInt(gol)),
+        };
+
+        // if (Object.keys(changes).length === 1 && changes.estado) {
+        //     return "Se cambió el estado exitosamente";
+        // }
+        
+        equipos[equipoIndex] = updatedProduct;
+
+        await  equiposModel.updateOne({ _id: id },{ $set: updatedProduct })
+
+        return updatedProduct;
     }
 }

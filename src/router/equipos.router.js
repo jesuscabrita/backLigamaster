@@ -51,6 +51,7 @@ router.post("/", uploader.single("logo"), async (req, res) => {
             arbitro,
             estadio,
             gol_partido,
+            estado,
             jugadores
         } = req.body;
         
@@ -77,6 +78,7 @@ router.post("/", uploader.single("logo"), async (req, res) => {
             arbitro,
             estadio,
             gol_partido,
+            estado,
             jugadores
         );
 
@@ -85,5 +87,18 @@ router.post("/", uploader.single("logo"), async (req, res) => {
         return res.status(400).send({ status: "Error", message : err.message });
     }
 });
+
+router.put("/:id", uploader.single("logo"), async (req, res) => {
+    const equipoID = req.params.id;
+    const changes = req.body;
+
+    try {
+        const updatedEquipo = await equiposDatabase.editarEquipo(equipoID, {...changes });
+
+        return res.status(200).send({ status: "OK", message: `El equipo se edito correctamente`, updatedEquipo });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+})
 
 export default router;
