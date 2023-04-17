@@ -37,9 +37,9 @@ export class EquiposDataBase {
         const nameEquipo = equipos.some(equipo => equipo.name === name);
         return nameEquipo;
     }
-    
+
     enviarCorreo = async (equipo) => {
-    
+
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
             port: 587,
@@ -85,7 +85,7 @@ export class EquiposDataBase {
         </html>
             `
         };
-        
+
 
         // Enviar correo electrónico
         try {
@@ -95,7 +95,7 @@ export class EquiposDataBase {
             console.error(error);
         }
     };
-    
+
     validateEquiposData(name, correo) {
         if (!name) {
             throw new Error("El nombre del equipo es requerido");
@@ -129,6 +129,7 @@ export class EquiposDataBase {
         gol_partido,
         estado,
         correo,
+        categoria,
         jugadores
     ) => {
         this.validateEquiposData(name, correo);
@@ -184,9 +185,10 @@ export class EquiposDataBase {
             gol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             estado: 'enCola',
             correo: correo.trim(),
+            categoria: '',
             jugadores: []
         }
-        
+
         await this.enviarCorreo(newEquipo);
 
         equipos?.push(newEquipo)
@@ -206,29 +208,31 @@ export class EquiposDataBase {
         const updatedProduct = {
             ...equipos[equipoIndex],
             ...changes,
-            // partidosJugados: parseFloat(changes.partidosJugados),
-            // ganados: parseInt(changes.ganados),
-            // empates: parseInt(changes.empates),
-            // perdidos: parseInt(changes.perdidos),
-            // goles_a_Favor: parseInt(changes.goles_a_Favor),
-            // goles_en_Contra: parseInt(changes.goles_en_Contra),
-            // diferencia_de_Goles: parseInt(changes.diferencia_de_Goles),
-            // puntos: parseInt(changes.puntos),
-            // puntaje_anterior: parseInt(changes.puntaje_anterior),
-            // banco_fondo: parseInt(changes. banco_fondo),
-            // tarjetasAmarillas: parseInt(changes.tarjetasAmarillas),
-            // tarjetasRojas: parseInt(changes.tarjetasRojas),
-            // gol_partido: changes.gol_partido.map((gol) => parseInt(gol)),
         };
-
-        // if (Object.keys(changes).length === 1 && changes.estado) {
-        //     return "Se cambió el estado exitosamente";
-        // }
 
         equipos[equipoIndex] = updatedProduct;
 
         await equiposModel.updateOne({ _id: id }, { $set: updatedProduct })
 
         return updatedProduct;
+    }
+
+    eliminarEquipo = async (id) => {
+        const equipos = await this.getEquipos();
+        const index = equipos.findIndex((equipo) => equipo._id == id);
+
+        if (index === -1) {
+            throw new Error(`No se encontró el equipo con ID ${id}`);
+        }
+
+        const logo = equipos[index].logo;
+        if (logo && logo.public_id) {
+            await cloudinary.uploader.destroy(logo.public_id);
+        }
+
+        equipos.splice(index, 1);
+        await equiposModel.findByIdAndDelete(id);
+
+        return `Se eliminó el equipo con _id : "${id}" correctamente`;
     }
 }

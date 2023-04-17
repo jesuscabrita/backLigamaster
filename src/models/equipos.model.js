@@ -87,6 +87,7 @@ const equiposSchema = new Schema(
         gol_partido: [Number],
         estado: { type: String },
         correo: { type: String },
+        categoria: { type: String },
         jugadores: [jugadorSchema]
     },
     { timestamps: true }

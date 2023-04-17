@@ -53,6 +53,7 @@ router.post("/", uploader.single("logo"), async (req, res) => {
             gol_partido,
             estado,
             correo,
+            categoria,
             jugadores
         } = req.body;
         
@@ -81,6 +82,7 @@ router.post("/", uploader.single("logo"), async (req, res) => {
             gol_partido,
             estado,
             correo,
+            categoria,
             jugadores
         );
 
@@ -102,5 +104,20 @@ router.put("/:id", uploader.single("logo"), async (req, res) => {
         return res.status(404).send({ status: "Error", message: error.message });
     }
 })
+
+router.delete("/:id", async (req, res) => {
+    const equipoID = req.params.id;
+
+    try {
+        const message = await equiposDatabase.eliminarEquipo(equipoID);
+        return res
+            .status(200)
+            .send({ status: "Success", message });
+    } catch (error) {
+        return res
+            .status(404)
+            .send({ status: "Error", message: error.message });
+    }
+});
 
 export default router;
