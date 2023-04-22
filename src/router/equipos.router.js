@@ -54,6 +54,7 @@ router.post("/", uploader.single("logo"), async (req, res) => {
             estado,
             correo,
             categoria,
+            instagram,
             jugadores
         } = req.body;
         
@@ -83,6 +84,7 @@ router.post("/", uploader.single("logo"), async (req, res) => {
             estado,
             correo,
             categoria,
+            instagram,
             jugadores
         );
 

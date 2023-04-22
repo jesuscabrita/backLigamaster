@@ -6,6 +6,7 @@ import ligaRouter from "./router/equipos.router.js";
 import cors from "cors";
 import { fileSizeLimitMiddleware } from "./fileSizeLimit.js";
 import bodyParser from 'body-parser';
+import morgan from "morgan";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use("/", express.static(`${__dirname}/public`));
 app.use(fileSizeLimitMiddleware);
+app.use(morgan("dev"));
 
 app.use("/api/liga", cors(), ligaRouter);
 

@@ -88,6 +88,7 @@ const equiposSchema = new Schema(
         estado: { type: String },
         correo: { type: String },
         categoria: { type: String },
+        instagram: { type: String },
         jugadores: [jugadorSchema]
     },
     { timestamps: true }

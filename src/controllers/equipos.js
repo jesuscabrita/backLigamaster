@@ -38,6 +38,16 @@ export class EquiposDataBase {
         return nameEquipo;
     }
 
+    validarEmail(correo) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(correo);
+    }
+
+    checkEquipoCorreo = async (correo) =>{
+        const equipo = await equiposModel.findOne({ correo });
+        return equipo !== null;
+    }
+
     enviarCorreo = async (equipo) => {
 
         const transporter = nodemailer.createTransport({
@@ -63,14 +73,6 @@ export class EquiposDataBase {
                 </style>
             </head>
             <body>
-                <header style="
-                    height: 50vh;
-                    background-position: center;
-                    background-size: cover;"
-                }}>
-                    <img style="width: 100%;"
-                        src="https://www.pnguniverse.com/wp-content/uploads/2020/10/Logo-liga-BBVA-1024x354.png" alt="" />
-                </header>
                 <div style="background: white; z-index:9999;">
                 <p>Tu equipo fue ingresado en la base de datos de la nueva plataforma</p>
                 <p>de torneos online <a href="https://front-deportes.vercel.app/">Laliga.com</a> Seras parte de una experiencias nunca</p>
@@ -96,12 +98,15 @@ export class EquiposDataBase {
         }
     };
 
-    validateEquiposData(name, correo) {
+    validateEquiposData(name, correo, instagram) {
         if (!name) {
             throw new Error("El nombre del equipo es requerido");
         }
         if (!correo) {
             throw new Error("El correo del equipo es requerido");
+        }
+        if (!instagram){
+            throw new Error("El instagram del equipo es requerido");
         }
     }
 
@@ -130,9 +135,17 @@ export class EquiposDataBase {
         estado,
         correo,
         categoria,
+        instagram,
         jugadores
     ) => {
-        this.validateEquiposData(name, correo);
+        this.validateEquiposData(name, correo, instagram);
+        if (!this.validarEmail(correo)) {
+            throw new Error(`El correo "${correo}" no es válido`);
+        }
+        const existeEquipoConCorreo = await this.checkEquipoCorreo(correo);
+        if (existeEquipoConCorreo) {
+            throw new Error(`Ya existe un equipo registrado con el correo "${correo}"`);
+        }
         const equipos = await this.getEquipos();
         const nameEquipo = await this.checkEquipoName(name)
         if (nameEquipo) {
@@ -166,7 +179,8 @@ export class EquiposDataBase {
             tarjetasRojas: 0,
             director_tecnico: [],
             delegado: {},
-            fecha: ["No definido",
+            fecha: [
+                "No definido",
                 "No definido",
                 "No definido",
                 "No definido",
@@ -180,12 +194,13 @@ export class EquiposDataBase {
                 "No definido",
                 "No definido"
             ],
-            arbitro: '',
-            estadio: '',
+            arbitro: 'No definido',
+            estadio: 'No definido',
             gol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             estado: 'enCola',
             correo: correo.trim(),
-            categoria: '',
+            categoria: 'primera',
+            instagram: instagram.trim(),
             jugadores: []
         }
 
