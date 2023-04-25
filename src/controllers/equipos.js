@@ -251,7 +251,7 @@ export class EquiposDataBase {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
         }
 
-        if (equipo.jugadores.length >= 4) {
+        if (equipo.jugadores.length >= 4 ) {
             throw new Error("Ya se han creado 4 jugadores en este equipo es el límite");
         }
 
