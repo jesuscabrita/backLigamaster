@@ -28,13 +28,13 @@ router.get("/:pid", async (req, res) => {
 
 router.post("/", uploader.single("logo"), async (req, res) => {
     try {
-        const { 
+        const {
             name,
             partidosJugados,
-            ganados, 
-            empates, 
-            perdidos, 
-            goles_a_Favor, 
+            ganados,
+            empates,
+            perdidos,
+            goles_a_Favor,
             goles_en_Contra,
             diferencia_de_Goles,
             puntos,
@@ -57,14 +57,14 @@ router.post("/", uploader.single("logo"), async (req, res) => {
             instagram,
             jugadores
         } = req.body;
-        
+
         const newEquipo = await equiposDatabase.addEquipo(
             name,
             partidosJugados,
-            ganados, 
-            empates, 
-            perdidos, 
-            goles_a_Favor, 
+            ganados,
+            empates,
+            perdidos,
+            goles_a_Favor,
             goles_en_Contra,
             diferencia_de_Goles,
             puntos,
@@ -90,7 +90,29 @@ router.post("/", uploader.single("logo"), async (req, res) => {
 
         return res.status(201).send({ status: 'Succes', message: 'Se creó el equipo correctamente', equipo: newEquipo });
     } catch (err) {
-        return res.status(400).send({ status: "Error", message : err.message });
+        return res.status(400).send({ status: "Error", message: err.message });
+    }
+});
+
+router.post("/:equipoId/jugador", uploader.single("foto"), async (req, res) => {
+    try {
+        const equipoId = req.params.equipoId;
+        const jugador = req.body;
+        const equipo = await equiposDatabase.addJugadorToEquipo(equipoId, jugador);
+        return res.status(201).send({ status: 'Succes', message: 'Se creó el jugador correctamente', jugadores: equipo });
+    } catch (err) {
+        return res.status(400).send({ status: "Error", message: err.message });
+    }
+});
+
+router.delete("/:equipoId/jugadores/:jugadorId", async (req, res) => {
+    try {
+        const equipoId = req.params.equipoId;
+        const jugadorId = req.params.jugadorId;
+        const equipo = await equiposDatabase.eliminarJugadorDeEquipo(equipoId, jugadorId);
+        return res.status(200).send({ status: "Success", message: "El jugador fue eliminado exitosamente", equipo: equipo });
+    } catch (err) {
+        return res.status(400).send({ status: "Error", message: err.message });
     }
 });
 
@@ -99,7 +121,7 @@ router.put("/:id", uploader.single("logo"), async (req, res) => {
     const changes = req.body;
 
     try {
-        const updatedEquipo = await equiposDatabase.editarEquipo(equipoID, {...changes });
+        const updatedEquipo = await equiposDatabase.editarEquipo(equipoID, { ...changes });
 
         return res.status(200).send({ status: "OK", message: `El equipo se edito correctamente`, updatedEquipo });
     } catch (error) {
@@ -112,13 +134,9 @@ router.delete("/:id", async (req, res) => {
 
     try {
         const message = await equiposDatabase.eliminarEquipo(equipoID);
-        return res
-            .status(200)
-            .send({ status: "Success", message });
+        return res.status(200).send({ status: "Success", message });
     } catch (error) {
-        return res
-            .status(404)
-            .send({ status: "Error", message: error.message });
+        return res.status(404).send({ status: "Error", message: error.message });
     }
 });
 
