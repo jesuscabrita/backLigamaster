@@ -3,7 +3,9 @@ import { EquiposDataBase } from "../controllers/equipos.js";
 import { uploader } from '../utils.js';
 
 const router = express.Router();
-const equiposDatabase = new EquiposDataBase()
+const equiposDatabase = new EquiposDataBase();
+
+// Rutas del los equipos
 
 router.get("/", async (req, res) => {
     try {
@@ -94,28 +96,6 @@ router.post("/", uploader.single("logo"), async (req, res) => {
     }
 });
 
-router.post("/:equipoId/jugador", uploader.single("foto"), async (req, res) => {
-    try {
-        const equipoId = req.params.equipoId;
-        const jugador = req.body;
-        const equipo = await equiposDatabase.addJugadorToEquipo(equipoId, jugador);
-        return res.status(201).send({ status: 'Succes', message: 'Se creó el jugador correctamente', jugadores: equipo });
-    } catch (err) {
-        return res.status(400).send({ status: "Error", message: err.message });
-    }
-});
-
-router.delete("/:equipoId/jugadores/:jugadorId", async (req, res) => {
-    try {
-        const equipoId = req.params.equipoId;
-        const jugadorId = req.params.jugadorId;
-        const equipo = await equiposDatabase.eliminarJugadorDeEquipo(equipoId, jugadorId);
-        return res.status(200).send({ status: "Success", message: "El jugador fue eliminado exitosamente", equipo: equipo });
-    } catch (err) {
-        return res.status(400).send({ status: "Error", message: err.message });
-    }
-});
-
 router.put("/:id", uploader.single("logo"), async (req, res) => {
     const equipoID = req.params.id;
     const changes = req.body;
@@ -137,6 +117,44 @@ router.delete("/:id", async (req, res) => {
         return res.status(200).send({ status: "Success", message });
     } catch (error) {
         return res.status(404).send({ status: "Error", message: error.message });
+    }
+});
+
+// Rutas del los jugadores
+
+router.post("/:equipoId/jugador", uploader.single("foto"), async (req, res) => {
+    try {
+        const equipoId = req.params.equipoId;
+        const jugador = req.body;
+        const equipo = await equiposDatabase.addJugadorToEquipo(equipoId, jugador);
+        return res.status(201).send({ status: 'Succes', message: 'Se creó el jugador correctamente', jugadores: equipo });
+    } catch (err) {
+        return res.status(400).send({ status: "Error", message: err.message });
+    }
+});
+
+router.put("/:equipoId/jugador/:jugadorId", uploader.single("foto"), async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    const jugador = req.body;
+
+    try {
+        const updatedJugador = await equiposDatabase.editarJugadorEnEquipo(equipoId, jugadorId, jugador);
+
+        return res.status(200).send({ status: "OK", message: `El jugador se editó correctamente`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+})
+
+router.delete("/:equipoId/jugadores/:jugadorId", async (req, res) => {
+    try {
+        const equipoId = req.params.equipoId;
+        const jugadorId = req.params.jugadorId;
+        const equipo = await equiposDatabase.eliminarJugadorDeEquipo(equipoId, jugadorId);
+        return res.status(200).send({ status: "Success", message: "El jugador fue eliminado exitosamente", equipo: equipo });
+    } catch (err) {
+        return res.status(400).send({ status: "Error", message: err.message });
     }
 });
 

@@ -251,7 +251,7 @@ export class EquiposDataBase {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
         }
 
-        if (equipo.jugadores.length >= 4 ) {
+        if (equipo.jugadores.length >= 4) {
             throw new Error("Ya se han creado 4 jugadores en este equipo es el límite");
         }
 
@@ -272,6 +272,7 @@ export class EquiposDataBase {
             const nuevoJugador = {
                 name: jugador.name.trim(),
                 edad: jugador.edad,
+                capitan:'No',
                 posicion: jugador.posicion.trim(),
                 fecha_nacimiento: jugador.fecha_nacimiento,
                 goles: 0,
@@ -322,6 +323,51 @@ export class EquiposDataBase {
         } catch (err) {
             console.error(err);
             throw new Error("Error al eliminar jugador del equipo");
+        }
+    }
+
+    editarJugadorEnEquipo = async (equipoId, jugadorId, jugador) => {
+        
+            const equipo = await equiposModel.findById(equipoId);
+            if (!equipo) {
+                throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+            }
+
+            const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+            if (jugadorIndex === -1) {
+                throw new Error("El jugador no existe en el equipo");
+            }
+
+            const dorsalExistente = equipo.jugadores.find(j => j.dorsal == jugador.dorsal && j._id != jugadorId);
+            if (dorsalExistente) {
+                throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
+            }
+
+    try {
+
+            let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
+            if (jugador.foto) {
+                const result = await cloudinary.uploader.upload(jugador.foto);
+                newFotoUrl = result.secure_url;
+            }
+
+            const updatedJugador = {
+                name: jugador.name.trim(),
+                edad: jugador.edad,
+                posicion: jugador.posicion.trim(),
+                fecha_nacimiento: jugador.fecha_nacimiento,
+                nacionalidad: jugador.nacionalidad.trim(),
+                dorsal: jugador.dorsal,
+                instagram: jugador.instagram.trim(),
+                foto: newFotoUrl
+            };
+
+            equipo.jugadores[jugadorIndex] = { ...equipo.jugadores[jugadorIndex], ...updatedJugador };
+            await equiposModel.findByIdAndUpdate(equipoId, { jugadores: equipo.jugadores });
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar jugador del equipo");
         }
     };
 

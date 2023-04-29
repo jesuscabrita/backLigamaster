@@ -6,6 +6,7 @@ const jugadorSchema = new Schema(
     {
         name: { type: String },
         edad: { type: Number },
+        capitan: { type: String },
         posicion: { type: String },
         fecha_nacimiento: { type: String },
         goles: { type: Number },
