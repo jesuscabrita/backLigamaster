@@ -12,6 +12,8 @@ cloudinary.config({
 export class EquiposDataBase {
     constructor() { }
 
+    //CONTROLLERS EQUIPOS
+
     getEquipos = async (limit) => {
         try {
             const data = await equiposModel.find()
@@ -170,7 +172,21 @@ export class EquiposDataBase {
             goles_en_Contra: 0,
             diferencia_de_Goles: 0,
             puntos: 0,
-            last5: ["neutral", "neutral", "neutral", "neutral", "neutral"],
+            last5: [
+                "neutral",
+                "neutral",
+                "neutral",
+                "neutral",
+                "neutral",
+                "neutral",
+                "neutral",
+                "neutral",
+                "neutral",
+                "neutral",
+                "neutral",
+                "neutral",
+                "neutral",
+            ],
             logo: newLogoUrl,
             puntaje_anterior: 0,
             foto_equipo: "",
@@ -194,7 +210,21 @@ export class EquiposDataBase {
                 "No definido",
                 "No definido"
             ],
-            arbitro: 'No definido',
+            arbitro: [
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido",
+                "No definido"
+            ],
             estadio: 'No definido',
             gol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             estado: 'enCola',
@@ -211,6 +241,47 @@ export class EquiposDataBase {
 
         return newEquipo;
     }
+
+    editarEquipo = async (id, changes) => {
+        const equipos = await this.getEquipos();
+        const equipoIndex = equipos.findIndex((equipo) => equipo._id == id);
+
+        if (equipoIndex === -1) {
+            throw new Error(`No se encontró el equipo con ID ${id}`);
+        }
+
+        const updatedProduct = {
+            ...equipos[equipoIndex],
+            ...changes,
+        };
+
+        equipos[equipoIndex] = updatedProduct;
+
+        await equiposModel.updateOne({ _id: id }, { $set: updatedProduct })
+
+        return updatedProduct;
+    }
+
+    eliminarEquipo = async (id) => {
+        const equipos = await this.getEquipos();
+        const index = equipos.findIndex((equipo) => equipo._id == id);
+
+        if (index === -1) {
+            throw new Error(`No se encontró el equipo con ID ${id}`);
+        }
+
+        const logo = equipos[index].logo;
+        if (logo && logo.public_id) {
+            await cloudinary.uploader.destroy(logo.public_id);
+        }
+
+        equipos.splice(index, 1);
+        await equiposModel.findByIdAndDelete(id);
+
+        return `Se eliminó el equipo con _id : "${id}" correctamente`;
+    }
+
+    //CONTROLLERS JUGADORES
 
     validateJugadorData(name, edad, posicion, fecha_nacimiento, nacionalidad, dorsal, instagram) {
         if (!name) {
@@ -272,7 +343,7 @@ export class EquiposDataBase {
             const nuevoJugador = {
                 name: jugador.name.trim(),
                 edad: jugador.edad,
-                capitan:'No',
+                capitan: 'No',
                 posicion: jugador.posicion.trim(),
                 fecha_nacimiento: jugador.fecha_nacimiento,
                 goles: 0,
@@ -327,23 +398,23 @@ export class EquiposDataBase {
     }
 
     editarJugadorEnEquipo = async (equipoId, jugadorId, jugador) => {
-        
-            const equipo = await equiposModel.findById(equipoId);
-            if (!equipo) {
-                throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
-            }
 
-            const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
-            if (jugadorIndex === -1) {
-                throw new Error("El jugador no existe en el equipo");
-            }
+        const equipo = await equiposModel.findById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
 
-            const dorsalExistente = equipo.jugadores.find(j => j.dorsal == jugador.dorsal && j._id != jugadorId);
-            if (dorsalExistente) {
-                throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
-            }
+        const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+        if (jugadorIndex === -1) {
+            throw new Error("El jugador no existe en el equipo");
+        }
 
-    try {
+        const dorsalExistente = equipo.jugadores.find(j => j.dorsal == jugador.dorsal && j._id != jugadorId);
+        if (dorsalExistente) {
+            throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
+        }
+
+        try {
 
             let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
             if (jugador.foto) {
@@ -371,42 +442,37 @@ export class EquiposDataBase {
         }
     };
 
-    editarEquipo = async (id, changes) => {
-        const equipos = await this.getEquipos();
-        const equipoIndex = equipos.findIndex((equipo) => equipo._id == id);
-
-        if (equipoIndex === -1) {
-            throw new Error(`No se encontró el equipo con ID ${id}`);
+    editarGolJugador = async (equipoId, jugadorId, jugador) => {
+        const equipo = await equiposModel.findById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
         }
 
-        const updatedProduct = {
-            ...equipos[equipoIndex],
-            ...changes,
-        };
-
-        equipos[equipoIndex] = updatedProduct;
-
-        await equiposModel.updateOne({ _id: id }, { $set: updatedProduct })
-
-        return updatedProduct;
-    }
-
-    eliminarEquipo = async (id) => {
-        const equipos = await this.getEquipos();
-        const index = equipos.findIndex((equipo) => equipo._id == id);
-
-        if (index === -1) {
-            throw new Error(`No se encontró el equipo con ID ${id}`);
+        const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+        if (jugadorIndex === -1) {
+            throw new Error("El jugador no existe en el equipo");
         }
+        try {
+            let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
+            if (jugador.foto) {
+                const result = await cloudinary.uploader.upload(jugador.foto);
+                newFotoUrl = result.secure_url;
+            }
 
-        const logo = equipos[index].logo;
-        if (logo && logo.public_id) {
-            await cloudinary.uploader.destroy(logo.public_id);
+            const updatedJugador = {
+                gol_partido: jugador.gol_partido
+            };
+
+            equipo.jugadores[jugadorIndex].gol_partido = updatedJugador.gol_partido;
+            if (jugador.foto) {
+                equipo.jugadores[jugadorIndex].foto = newFotoUrl;
+            }
+
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar jugador del equipo");
         }
-
-        equipos.splice(index, 1);
-        await equiposModel.findByIdAndDelete(id);
-
-        return `Se eliminó el equipo con _id : "${id}" correctamente`;
-    }
+    };
 }

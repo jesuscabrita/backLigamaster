@@ -83,7 +83,7 @@ const equiposSchema = new Schema(
         director_tecnico: [directorTecnicoSchema],
         delegado: delegadoSchema,
         fecha: { type: [String] },
-        arbitro: { type: String },
+        arbitro: { type: [String] },
         estadio: { type: String },
         gol_partido: [Number],
         estado: { type: String },

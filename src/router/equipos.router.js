@@ -147,6 +147,20 @@ router.put("/:equipoId/jugador/:jugadorId", uploader.single("foto"), async (req,
     }
 })
 
+router.put("/:equipoId/goles/:jugadorId", uploader.single("foto"), async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    const jugador = req.body;
+
+    try {
+        const updatedJugador = await equiposDatabase.editarGolJugador(equipoId, jugadorId, jugador);
+
+        return res.status(200).send({ status: "OK", message: `El jugador se editó correctamente`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+})
+
 router.delete("/:equipoId/jugadores/:jugadorId", async (req, res) => {
     try {
         const equipoId = req.params.equipoId;
