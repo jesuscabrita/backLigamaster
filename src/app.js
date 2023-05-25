@@ -2,11 +2,11 @@ import express from "express";
 import __dirname from "./utils.js";
 import { PORT } from "./config.js";
 import { connectToDatabase } from "./database/database.js";
-import ligaRouter from "./router/equipos.router.js";
 import cors from "cors";
-import { fileSizeLimitMiddleware } from "./fileSizeLimit.js";
 import bodyParser from 'body-parser';
 import morgan from "morgan";
+import { fileSizeLimitMiddleware } from "./middlewares/fileSizeLimit.js";
+import { plugin_Rutas } from "./router/routes.js";
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.use("/", express.static(`${__dirname}/public`));
 app.use(fileSizeLimitMiddleware);
 app.use(morgan("dev"));
 
-app.use("/api/liga", cors(), ligaRouter);
+plugin_Rutas(app, cors())
 
 app.listen(PORT, () => {
     console.log(`Servidor corre en el puerto ${PORT}`);
