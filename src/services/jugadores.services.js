@@ -149,7 +149,7 @@ class JugadoresService {
             };
 
             equipo.jugadores[jugadorIndex] = { ...equipo.jugadores[jugadorIndex], ...updatedJugador };
-            await this.jugadores.modelJugadoresEdit(equipoId, equipo.jugadores );
+            await this.jugadores.modelJugadoresEdit(equipoId, equipo.jugadores);
             return equipo;
         } catch (err) {
             console.error(err);
@@ -157,7 +157,7 @@ class JugadoresService {
         }
     };
 
-    editarGolJugador = async (equipoId, jugadorId, jugador) => {
+    editarGolJugador = async (equipoId, jugadorId, jugador, golPartido,golAFavor) => {
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
@@ -173,9 +173,13 @@ class JugadoresService {
                 newFotoUrl = result.secure_url;
             }
             const updatedJugador = {
-                gol_partido: jugador.gol_partido
+                gol_partido: jugador.gol_partido,
+                goles: jugador.goles,
             };
             equipo.jugadores[jugadorIndex].gol_partido = updatedJugador.gol_partido;
+            equipo.jugadores[jugadorIndex].goles = updatedJugador.goles;
+            equipo.gol_partido = golPartido;
+            equipo.goles_a_Favor = golAFavor
             if (jugador.foto) {
                 equipo.jugadores[jugadorIndex].foto = newFotoUrl;
             }
@@ -185,7 +189,7 @@ class JugadoresService {
             console.error(err);
             throw new Error("Error al editar jugador del equipo");
         }
-    };
+    };;
 }
 
 export const jugadoresService = new JugadoresService();

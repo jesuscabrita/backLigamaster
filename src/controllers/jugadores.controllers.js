@@ -27,8 +27,10 @@ export const editGolJugador = async (req, res) => {
     const equipoId = req.params.equipoId;
     const jugadorId = req.params.jugadorId;
     const jugador = req.body;
+    const golPartido = req.body.gol_partido;
+    const golAFavor = req.body.goles_a_Favor
     try {
-        const updatedJugador = await jugadoresService.editarGolJugador(equipoId, jugadorId, jugador);
+        const updatedJugador = await jugadoresService.editarGolJugador(equipoId, jugadorId, jugador, golPartido, golAFavor);
         return res.status(200).send({ status: "OK", message: `El jugador se editó correctamente`, updatedJugador });
     } catch (error) {
         return res.status(404).send({ status: "Error", message: error.message });
