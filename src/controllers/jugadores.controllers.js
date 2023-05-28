@@ -100,6 +100,17 @@ export const editFiguraJugador = async (req, res) => {
     }
 };
 
+export const editAutoGol = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const equipo = req.body;
+    try {
+        const updatedEquipo = await jugadoresService.editAutoGol(equipoId, equipo);
+        return res.status(200).send({ status: "OK", message: `Se actualizaron los datos del partido correctamente`, updatedEquipo });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
+
 export const editCalculoPartido = async (req, res) => {
     const equipoId = req.params.equipoId;
     const equipo = req.body;

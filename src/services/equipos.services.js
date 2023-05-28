@@ -110,6 +110,7 @@ class EquiposService {
             arbitro: ["No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido"],
             estadio: 'No definido',
             gol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            autogol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             estado: 'enCola',
             correo: equipo.correo.trim(),
             categoria: 'primera',

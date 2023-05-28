@@ -89,6 +89,7 @@ const equiposSchema = new Schema(
         arbitro: { type: [String] },
         estadio: { type: String },
         gol_partido: [Number],
+        autogol_partido: [Number],
         estado: { type: String },
         correo: { type: String },
         categoria: { type: String },

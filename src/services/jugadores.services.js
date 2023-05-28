@@ -370,6 +370,23 @@ class JugadoresService {
         }
     };
 
+    editAutoGol = async (equipoId, equipos) => {
+        const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        try {
+            equipo.goles_a_Favor = equipos.goles_a_Favor;
+            equipo.gol_partido = equipos.gol_partido;
+            equipo.autogol_partido = equipos.autogol_partido;
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar el equipo");
+        }
+    }
+
     editCalcularDatosPartido = async (equipoId, equipos) => {
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
