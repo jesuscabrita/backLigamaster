@@ -100,6 +100,30 @@ export const editFiguraJugador = async (req, res) => {
     }
 };
 
+export const editSuspencionJugador = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    const jugador = req.body;
+    try {
+        const updatedJugador = await jugadoresService.editarSuspencionJugador(equipoId, jugadorId, jugador);
+        return res.status(200).send({ status: "OK", message: `El jugador se editó correctamente`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
+
+export const editPartidosJugador = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    const jugador = req.body;
+    try {
+        const updatedJugador = await jugadoresService.editarPartidosJugador(equipoId, jugadorId, jugador);
+        return res.status(200).send({ status: "OK", message: `El jugador se editó correctamente`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
+
 export const editAutoGol = async (req, res) => {
     const equipoId = req.params.equipoId;
     const equipo = req.body;

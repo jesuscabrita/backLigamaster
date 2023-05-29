@@ -1,6 +1,6 @@
 import express from "express";
 import { uploader } from "../middlewares/multer.js";
-import { addJugador, deleteJugador, editAmarillaJugador, editAsistenciaJugador, editAutoGol, editAzulJugador, editCalculoPartido, editFiguraJugador, editGolJugador, editJugador, editRojaJugador } from "../controllers/jugadores.controllers.js";
+import { addJugador, deleteJugador, editAmarillaJugador, editAsistenciaJugador, editAutoGol, editAzulJugador, editCalculoPartido, editFiguraJugador, editGolJugador, editJugador, editPartidosJugador, editRojaJugador, editSuspencionJugador } from "../controllers/jugadores.controllers.js";
 
 const router = express.Router();
 
@@ -14,6 +14,8 @@ router.put("/:equipoId/rojas/:jugadorId", uploader.single("foto"), editRojaJugad
 router.put("/:equipoId/azul/:jugadorId", uploader.single("foto"), editAzulJugador);
 router.put("/:equipoId/asistencias/:jugadorId", uploader.single("foto"), editAsistenciaJugador);
 router.put("/:equipoId/figuras/:jugadorId", uploader.single("foto"), editFiguraJugador);
+router.put("/:equipoId/partidos/:jugadorId", uploader.single("foto"), editPartidosJugador);
+router.put("/:equipoId/suspencion/:jugadorId", uploader.single("foto"), editSuspencionJugador);
 router.delete("/:equipoId/jugadores/:jugadorId", deleteJugador);
 
 export default router;
