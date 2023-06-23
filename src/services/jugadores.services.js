@@ -86,6 +86,7 @@ class JugadoresService {
                 suspendido_numero: 0,
                 suspendido: 'No',
                 jornadas_suspendido:0,
+                tarjetas_acumuladas:0,
                 instagram: jugador.instagram.trim(),
                 twitter: 'No definido',
                 equipo: equipo.name,
@@ -217,6 +218,7 @@ class JugadoresService {
                 tarjetas_roja: jugador.tarjetas_roja,
                 suspendido_numero: jugador.suspendido_numero,
                 suspendido: jugador.suspendido,
+                tarjetas_acumuladas : jugador.tarjetas_acumuladas,
             };
             equipo.jugadores[jugadorIndex].amarilla_partido_individual = updatedJugador.amarilla_partido_individual;
             equipo.jugadores[jugadorIndex].roja_partido_individual = updatedJugador.roja_partido_individual;
@@ -224,6 +226,7 @@ class JugadoresService {
             equipo.jugadores[jugadorIndex].tarjetas_roja = updatedJugador.tarjetas_roja;
             equipo.jugadores[jugadorIndex].suspendido_numero = updatedJugador.suspendido_numero;
             equipo.jugadores[jugadorIndex].suspendido = updatedJugador.suspendido;
+            equipo.jugadores[jugadorIndex].tarjetas_acumuladas = updatedJugador.tarjetas_acumuladas;
             equipo.tarjetasAmarillas = amarillas;
             equipo.tarjetasRojas = rojas;
             if (jugador.foto) {
@@ -423,9 +426,11 @@ class JugadoresService {
             const updatedJugador = {
                 jornadas_suspendido: jugador.jornadas_suspendido,
                 suspendido: jugador.suspendido,
+                tarjetas_acumuladas : jugador.tarjetas_acumuladas,
             };
             equipo.jugadores[jugadorIndex].jornadas_suspendido = updatedJugador.jornadas_suspendido;
             equipo.jugadores[jugadorIndex].suspendido = updatedJugador.suspendido;
+            equipo.jugadores[jugadorIndex].tarjetas_acumuladas = updatedJugador.tarjetas_acumuladas;
             
             if (jugador.foto) {
                 equipo.jugadores[jugadorIndex].foto = newFotoUrl;

@@ -29,6 +29,7 @@ const jugadorSchema = new Schema(
         suspendido_numero: { type: Number },
         suspendido: { type: String },
         jornadas_suspendido: { type: Number },
+        tarjetas_acumuladas: { type: Number },
         instagram: { type: String },
         twitter: { type: String },
         equipo: { type: String },
