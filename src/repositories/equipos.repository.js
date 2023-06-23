@@ -1,4 +1,4 @@
-import { API_KEY, API_SECRET, CLOUD_NAME, EMAIL_PASSWORD, EMAIL_USERNAME } from "../config.js";
+import { API_KEY, API_SECRET, CLOUD_NAME, EMAIL_PASSWORD, EMAIL_USERNAME, HOST_EMAIL, PORT_EMAIL } from "../config.js";
 import { equiposModel } from "../models/equipos.model.js";
 import nodemailer from 'nodemailer';
 import { v2 as cloudinary } from 'cloudinary';
@@ -34,8 +34,8 @@ class EquiposRepository {
 
     createTransportCorreo = () => {
         return nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 587,
+            host: HOST_EMAIL,
+            port: PORT_EMAIL,
             auth: {
                 user: EMAIL_USERNAME,
                 pass: EMAIL_PASSWORD
