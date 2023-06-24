@@ -51,3 +51,14 @@ export const deleteEquipos = async (req, res) => {
         return res.status(404).send({ status: "Error", message: error.message });
     }
 };
+
+export const resetEquipoJugadores = async (req, res) => {
+    const equipoID = req.params.equipoID;
+    try {
+        const updatedEquipos = await equiposService.resetEquipoJugador(equipoID); // Llama a la función pasando el arreglo de equipos
+
+        return res.status(200).send({ status: "OK", message: "Los equipos se resetearon correctamente", updatedEquipos });
+    } catch (error) {
+        return res.status(500).send({ status: "Error", message: error.message });
+    }
+};

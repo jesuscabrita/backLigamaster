@@ -16,12 +16,20 @@ class EquiposRepository {
         return equiposModel.find();
     }
 
+    modelEquipoById = (equipoId) => {
+        return equiposModel.findById(equipoId)
+    }
+
     modelEquiposCheck = (correo) => {
         return equiposModel.findOne({ correo });
     }
 
     modeEquiposCreate = (newEquipo) => {
         return equiposModel.create(newEquipo)
+    }
+
+    modelEquipoReset = (equipoID,updatedequipoJugador) => {
+        return equiposModel.findByIdAndUpdate(equipoID, updatedequipoJugador)
     }
 
     modelEquiposEdit = (id, updatedProduct) => {

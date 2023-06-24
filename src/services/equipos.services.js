@@ -45,7 +45,7 @@ class EquiposService {
         const transporter = this.equipos.createTransportCorreo();
         const correo = this.equipos.correoTextEnCola(equipo);
         try {
-            const info = await this.equipos.enviarCorreo(transporter,correo);
+            const info = await this.equipos.enviarCorreo(transporter, correo);
             console.log(`Correo electrónico enviado: ${info.messageId}`);
         } catch (error) {
             console.error(error);
@@ -97,7 +97,7 @@ class EquiposService {
             goles_en_Contra: 0,
             diferencia_de_Goles: 0,
             puntos: 0,
-            last5: ["neutral","neutral","neutral","neutral","neutral","neutral","neutral","neutral","neutral","neutral","neutral","neutral","neutral",],
+            last5: ["neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral",],
             logo: newLogoUrl,
             puntaje_anterior: 0,
             foto_equipo: "",
@@ -106,8 +106,8 @@ class EquiposService {
             tarjetasRojas: 0,
             director_tecnico: [],
             delegado: {},
-            fecha: ["No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido"],
-            arbitro: ["No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido","No definido"],
+            fecha: ["No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido"],
+            arbitro: ["No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido"],
             estadio: 'No definido',
             gol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             autogol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -135,7 +135,7 @@ class EquiposService {
             ...changes,
         };
         equipos[equipoIndex] = updatedProduct;
-        await this.equipos.modelEquiposEdit(id,updatedProduct);
+        await this.equipos.modelEquiposEdit(id, updatedProduct);
         return updatedProduct;
     }
 
@@ -154,6 +154,68 @@ class EquiposService {
         await this.equipos.modelEquiposDelete(id);
         return `Se eliminó el equipo con _id : "${id}" correctamente`;
     }
+
+    resetEquipoJugador = async (equipoID) => {
+        try {
+            const equipos = await this.getEquipos();
+            const equipoIndex = equipos.findIndex((equipo) => equipo._id == equipoID);
+            if (equipoIndex === -1) {
+                throw new Error(`No se encontró el equipo con ID ${equipoID}`);
+            }
+            const equipoActual = equipos[equipoIndex];
+
+            const updatedequipoJugador = {
+                ...equipoActual,
+                partidosJugados: 0,
+                ganados: 0,
+                empates: 0,
+                perdidos: 0,
+                goles_a_Favor: 0,
+                goles_en_Contra: 0,
+                diferencia_de_Goles: 0,
+                puntos: 0,
+                last5: ["neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral"],
+                puntaje_anterior: 0,
+                foto_equipo: "",
+                tarjetasAmarillas: 0,
+                tarjetasRojas: 0,
+                fecha: ["No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido"],
+                arbitro: ["No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido"],
+                gol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                autogol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                jugadores: equipoActual.jugadores.map((jug) => {
+                    return {
+                        ...jug,
+                        goles: 0,
+                        asistencias: 0,
+                        tarjetas_amarillas: 0,
+                        tarjetas_roja: 0,
+                        tarjetas_azul: 0,
+                        lesion: "No",
+                        partidos: 0,
+                        partidos_individual: ["No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No"],
+                        gol_partido_individual: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        amarilla_partido_individual: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        roja_partido_individual: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        azul_partido_individual: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        asistencia_partido_individual: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        jugador_figura_individual: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        figura: 0,
+                        suspendido_numero: 0,
+                        suspendido: "No",
+                        jornadas_suspendido: 0,
+                        tarjetas_acumuladas: 0,
+                    };
+                }),
+            };
+            equipos[equipoIndex] = updatedequipoJugador;
+            await this.equipos.modelEquipoReset(equipoID,updatedequipoJugador);
+            return updatedequipoJugador;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar jugadores de los equipos");
+        }
+    };
 }
 
 export const equiposService = new EquiposService();
