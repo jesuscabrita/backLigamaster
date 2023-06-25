@@ -179,6 +179,19 @@ class EquiposService {
                 foto_equipo: "",
                 tarjetasAmarillas: 0,
                 tarjetasRojas: 0,
+                director_tecnico: equipoActual.director_tecnico.map((dt) =>{
+                    return{
+                        ...dt,
+                        tarjetas_amarillas: 0,
+                        tarjetas_rojas: 0,
+                        amarilla_partido: [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        roja_partido: [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        partidos: 0,
+                        partidos_individual: ["No","No","No","No","No","No","No","No","No","No","No","No","No"],
+                        suspendido_numero: 0,
+                        suspendido: "No",
+                    }
+                }),
                 fecha: ["No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido"],
                 arbitro: ["No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido"],
                 gol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

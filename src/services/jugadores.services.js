@@ -143,14 +143,41 @@ class JugadoresService {
                 newFotoUrl = result.secure_url;
             }
             const updatedJugador = {
+                ...equipo.jugadores[jugadorIndex],
                 name: jugador.name.trim(),
                 edad: jugador.edad,
+                capitan: equipo.jugadores[jugadorIndex].capitan,
                 posicion: jugador.posicion.trim(),
                 fecha_nacimiento: jugador.fecha_nacimiento,
+                goles: equipo.jugadores[jugadorIndex].goles,
+                asistencias: equipo.jugadores[jugadorIndex].asistencias,
+                tarjetas_amarillas: equipo.jugadores[jugadorIndex].tarjetas_amarillas,
+                tarjetas_roja: equipo.jugadores[jugadorIndex].tarjetas_roja,
+                tarjetas_azul: equipo.jugadores[jugadorIndex].tarjetas_azul,
+                lesion: equipo.jugadores[jugadorIndex].lesion,
                 nacionalidad: jugador.nacionalidad.trim(),
                 dorsal: jugador.dorsal,
+                partidos: equipo.jugadores[jugadorIndex].partidos,
+                partidos_individual: equipo.jugadores[jugadorIndex].partidos_individual,
+                gol_partido_individual: equipo.jugadores[jugadorIndex].gol_partido_individual,
+                amarilla_partido_individual: equipo.jugadores[jugadorIndex].amarilla_partido_individual,
+                roja_partido_individual: equipo.jugadores[jugadorIndex].roja_partido_individual,
+                azul_partido_individual: equipo.jugadores[jugadorIndex].azul_partido_individual,
+                asistencia_partido_individual: equipo.jugadores[jugadorIndex].asistencia_partido_individual,
+                jugador_figura_individual: equipo.jugadores[jugadorIndex].jugador_figura_individual,
+                figura: equipo.jugadores[jugadorIndex].figura,
+                suspendido_numero: equipo.jugadores[jugadorIndex].suspendido_numero,
+                suspendido: equipo.jugadores[jugadorIndex].suspendido,
+                jornadas_suspendido: equipo.jugadores[jugadorIndex].jornadas_suspendido,
+                tarjetas_acumuladas: equipo.jugadores[jugadorIndex].tarjetas_acumuladas,
                 instagram: jugador.instagram.trim(),
-                foto: newFotoUrl
+                twitter: equipo.jugadores[jugadorIndex].twitter,
+                equipo: equipo.jugadores[jugadorIndex].equipo,
+                logo: equipo.jugadores[jugadorIndex].logo,
+                foto: newFotoUrl,
+                _id: equipo.jugadores[jugadorIndex]._id,
+                createdAt: equipo.jugadores[jugadorIndex].createdAt,
+                updatedAt: equipo.jugadores[jugadorIndex].updatedAt
             };
 
             equipo.jugadores[jugadorIndex] = { ...equipo.jugadores[jugadorIndex], ...updatedJugador };
