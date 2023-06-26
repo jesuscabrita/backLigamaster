@@ -33,6 +33,7 @@ class DTService {
             foto: newFotoUrl,
             tarjetas_amarillas: 0,
             tarjetas_rojas: 0,
+            tarjetas_azul: 0,
             amarilla_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             roja_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             azul_partido:[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -43,8 +44,10 @@ class DTService {
             twitter: "no definido",
             partidos: 0,
             partidos_individual: ['No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No'],
+            jornadas_suspendido: 0,
             suspendido_numero: 0,
             suspendido: 'No',
+            tarjetas_acumuladas: 0,
             telefono: dt.telefono,
             logo: equipo.logo,
             equipo: equipo.name
@@ -87,6 +90,7 @@ class DTService {
                 twitter: equipo.director_tecnico[dtIndex].twitter,
                 tarjetas_amarillas: equipo.director_tecnico[dtIndex].tarjetas_amarillas,
                 tarjetas_rojas: equipo.director_tecnico[dtIndex].tarjetas_rojas,
+                tarjetas_azul: equipo.director_tecnico[dtIndex].tarjetas_azul,
                 amarilla_partido: equipo.director_tecnico[dtIndex].amarilla_partido,
                 roja_partido: equipo.director_tecnico[dtIndex].roja_partido,
                 azul_partido: equipo.director_tecnico[dtIndex].azul_partido,
@@ -94,8 +98,10 @@ class DTService {
                 figura: equipo.director_tecnico[dtIndex].figura,
                 partidos: equipo.director_tecnico[dtIndex].partidos,
                 partidos_individual: equipo.director_tecnico[dtIndex].partidos_individual,
+                jornadas_suspendido: equipo.director_tecnico[dtIndex].jornadas_suspendido,
                 suspendido_numero: equipo.director_tecnico[dtIndex].suspendido_numero,
                 suspendido: equipo.director_tecnico[dtIndex].suspendido,
+                tarjetas_acumuladas: equipo.director_tecnico[dtIndex].tarjetas_acumuladas,
                 telefono: dt.telefono,
                 logo: equipo.director_tecnico[dtIndex].logo,
                 equipo: equipo.director_tecnico[dtIndex].equipo,
@@ -163,6 +169,119 @@ class DTService {
         } catch (err) {
             console.error(err);
             throw new Error("Error al editar jugador del equipo");
+        }
+    };
+
+    editarAmarillaDT = async (equipoId, directorTecnicoId, dt, amarillas, rojas) => {
+        const equipo = await this.equipos.modelEquiposGetByID(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const dtIndex = equipo.director_tecnico.findIndex((p) => p._id == directorTecnicoId);
+        if (dtIndex === -1) {
+            throw new Error("El director tecnico no existe en el equipo");
+        }
+        try {
+            let newFotoUrl = equipo.director_tecnico[dtIndex].foto;
+            if (dt.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(dt.foto);
+                newFotoUrl = result.secure_url;
+            }
+            const updatedDT = {
+                tarjetas_amarillas: dt.tarjetas_amarillas,
+                amarilla_partido: dt.amarilla_partido,
+                tarjetas_rojas: dt.tarjetas_rojas,
+                roja_partido: dt.roja_partido,
+                suspendido: dt.suspendido,
+                suspendido_numero: dt.suspendido_numero,
+                tarjetas_acumuladas: dt.tarjetas_acumuladas,
+            };
+            equipo.director_tecnico[dtIndex].tarjetas_amarillas = updatedDT.tarjetas_amarillas;
+            equipo.director_tecnico[dtIndex].amarilla_partido = updatedDT.amarilla_partido;
+            equipo.director_tecnico[dtIndex].tarjetas_rojas = updatedDT.tarjetas_rojas;
+            equipo.director_tecnico[dtIndex].roja_partido = updatedDT.roja_partido;
+            equipo.director_tecnico[dtIndex].suspendido = updatedDT.suspendido;
+            equipo.director_tecnico[dtIndex].suspendido_numero = updatedDT.suspendido_numero;
+            equipo.director_tecnico[dtIndex].tarjetas_acumuladas = updatedDT.tarjetas_acumuladas;
+            equipo.tarjetasAmarillas = amarillas;
+            equipo.tarjetasRojas = rojas;
+            if (dt.foto) {
+                equipo.director_tecnico[dtIndex].foto = newFotoUrl;
+            }
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar director tecnico del equipo");
+        }
+    };
+
+    editarRojaDT = async (equipoId, directorTecnicoId, dt, rojas) => {
+        const equipo = await this.equipos.modelEquiposGetByID(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const dtIndex = equipo.director_tecnico.findIndex((p) => p._id == directorTecnicoId);
+        if (dtIndex === -1) {
+            throw new Error("El director tecnico no existe en el equipo");
+        }
+        try {
+            let newFotoUrl = equipo.director_tecnico[dtIndex].foto;
+            if (dt.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(dt.foto);
+                newFotoUrl = result.secure_url;
+            }
+            const updatedDT = {
+                roja_partido: dt.roja_partido,
+                tarjetas_rojas: dt.tarjetas_rojas,
+                suspendido_numero: dt.suspendido_numero,
+                suspendido: dt.suspendido,
+            };
+            equipo.director_tecnico[dtIndex].roja_partido = updatedDT.roja_partido;
+            equipo.director_tecnico[dtIndex].tarjetas_rojas = updatedDT.tarjetas_rojas;
+            equipo.director_tecnico[dtIndex].suspendido_numero = updatedDT.suspendido_numero;
+            equipo.director_tecnico[dtIndex].suspendido = updatedDT.suspendido;
+            equipo.tarjetasRojas = rojas;
+            if (dt.foto) {
+                equipo.director_tecnico[dtIndex].foto = newFotoUrl;
+            }
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al director tecnico jugador del equipo");
+        }
+    };
+
+    editarAzulDT = async (equipoId, directorTecnicoId, dt) => {
+        const equipo = await this.equipos.modelEquiposGetByID(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const dtIndex = equipo.director_tecnico.findIndex((p) => p._id == directorTecnicoId);
+        if (dtIndex === -1) {
+            throw new Error("El director tecnico no existe en el equipo");
+        }
+        try {
+            let newFotoUrl = equipo.director_tecnico[dtIndex].foto;
+            if (dt.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(dt.foto);
+                newFotoUrl = result.secure_url;
+            }
+            const updatedDT = {
+                azul_partido_individual: dt.azul_partido_individual,
+                tarjetas_azul: dt.tarjetas_azul,
+            };
+            equipo.director_tecnico[dtIndex].azul_partido_individual = updatedDT.azul_partido_individual;
+            equipo.director_tecnico[dtIndex].tarjetas_azul = updatedDT.tarjetas_azul;
+            if (dt.foto) {
+                equipo.director_tecnico[dtIndex].foto = newFotoUrl;
+            }
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar tecnico del equipo");
         }
     };
 

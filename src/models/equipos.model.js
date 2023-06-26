@@ -47,6 +47,7 @@ const directorTecnicoSchema = new Schema(
         foto: { type: String },
         tarjetas_amarillas: { type: Number },
         tarjetas_rojas: { type: Number },
+        tarjetas_azul : { type: Number},
         amarilla_partido: { type: [Number] },
         azul_partido: { type: [Number] },
         roja_partido: { type: [Number] },
@@ -57,8 +58,10 @@ const directorTecnicoSchema = new Schema(
         twitter: { type: String },
         partidos: { type: Number },
         partidos_individual: { type: [String] },
+        jornadas_suspendido: { type: Number },
         suspendido_numero: { type: Number },
         suspendido: { type: String },
+        tarjetas_acumuladas: { type: Number },
         telefono: { type: String },
         logo: { type: String },
         equipo: { type: String }
@@ -105,7 +108,7 @@ const equiposSchema = new Schema(
         instagram: { type: String },
         jugadores: [jugadorSchema]
     },
-    { timestamps: true }
+    { timestamps: true },
 );
 
 export const equiposModel = model(equiposCollection, equiposSchema);

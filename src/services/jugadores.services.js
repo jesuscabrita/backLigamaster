@@ -75,7 +75,7 @@ class JugadoresService {
                 nacionalidad: jugador.nacionalidad.trim(),
                 dorsal: jugador.dorsal,
                 partidos: 0,
-                partidos_individual:['No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No'],
+                partidos_individual: ['No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No'],
                 gol_partido_individual: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 amarilla_partido_individual: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 roja_partido_individual: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -85,8 +85,8 @@ class JugadoresService {
                 figura: 0,
                 suspendido_numero: 0,
                 suspendido: 'No',
-                jornadas_suspendido:0,
-                tarjetas_acumuladas:0,
+                jornadas_suspendido: 0,
+                tarjetas_acumuladas: 0,
                 instagram: jugador.instagram.trim(),
                 twitter: 'No definido',
                 equipo: equipo.name,
@@ -189,7 +189,7 @@ class JugadoresService {
         }
     };
 
-    editarGolJugador = async (equipoId, jugadorId, jugador, golPartido,golAFavor) => {
+    editarGolJugador = async (equipoId, jugadorId, jugador, golPartido, golAFavor) => {
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
@@ -223,7 +223,7 @@ class JugadoresService {
         }
     };
 
-    editarAmarillaJugador = async (equipoId, jugadorId, jugador, amarillas, rojas ) => {
+    editarAmarillaJugador = async (equipoId, jugadorId, jugador, amarillas, rojas) => {
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
@@ -245,7 +245,7 @@ class JugadoresService {
                 tarjetas_roja: jugador.tarjetas_roja,
                 suspendido_numero: jugador.suspendido_numero,
                 suspendido: jugador.suspendido,
-                tarjetas_acumuladas : jugador.tarjetas_acumuladas,
+                tarjetas_acumuladas: jugador.tarjetas_acumuladas,
             };
             equipo.jugadores[jugadorIndex].amarilla_partido_individual = updatedJugador.amarilla_partido_individual;
             equipo.jugadores[jugadorIndex].roja_partido_individual = updatedJugador.roja_partido_individual;
@@ -267,7 +267,7 @@ class JugadoresService {
         }
     };
 
-    editarRojaJugador = async (equipoId, jugadorId, jugador, rojas ) => {
+    editarRojaJugador = async (equipoId, jugadorId, jugador, rojas) => {
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
@@ -304,7 +304,7 @@ class JugadoresService {
         }
     };
 
-    editarAzulJugador = async (equipoId, jugadorId, jugador ) => {
+    editarAzulJugador = async (equipoId, jugadorId, jugador) => {
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
@@ -336,7 +336,7 @@ class JugadoresService {
         }
     };
 
-    editarAsistenciaJugador = async (equipoId, jugadorId, jugador ) => {
+    editarAsistenciaJugador = async (equipoId, jugadorId, jugador) => {
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
@@ -369,7 +369,7 @@ class JugadoresService {
         }
     };
 
-    editarFiguraJugador = async (equipoId, jugadorId, jugador ) => {
+    editarFiguraJugador = async (equipoId, jugadorId, jugador) => {
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
@@ -390,7 +390,7 @@ class JugadoresService {
             };
             equipo.jugadores[jugadorIndex].jugador_figura_individual = updatedJugador.jugador_figura_individual;
             equipo.jugadores[jugadorIndex].figura = updatedJugador.figura;
-            
+
             if (jugador.foto) {
                 equipo.jugadores[jugadorIndex].foto = newFotoUrl;
             }
@@ -402,7 +402,7 @@ class JugadoresService {
         }
     };
 
-    editarPartidosJugador = async (equipoId, jugadorId, jugador ) => {
+    editarPartidosJugador = async (equipoId, jugadorId, jugador) => {
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
@@ -423,7 +423,7 @@ class JugadoresService {
             };
             equipo.jugadores[jugadorIndex].partidos = updatedJugador.partidos;
             equipo.jugadores[jugadorIndex].partidos_individual = updatedJugador.partidos_individual;
-            
+
             if (jugador.foto) {
                 equipo.jugadores[jugadorIndex].foto = newFotoUrl;
             }
@@ -435,7 +435,7 @@ class JugadoresService {
         }
     };
 
-    editarSuspencionJugador = async (equipoId, jugadorId, jugador ) => {
+    editarSuspencionJugador = async (equipoId, jugadorId, jugador) => {
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
@@ -445,25 +445,33 @@ class JugadoresService {
             throw new Error("El jugador no existe en el equipo");
         }
         try {
+            const updatedJugador = {
+                jornadas_suspendido: jugador.jornadas_suspendido,
+                suspendido: jugador.suspendido,
+                tarjetas_acumuladas: jugador.tarjetas_acumuladas,
+            };
+
             let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
             if (jugador.foto) {
                 const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto);
                 newFotoUrl = result.secure_url;
             }
-            const updatedJugador = {
-                jornadas_suspendido: jugador.jornadas_suspendido,
-                suspendido: jugador.suspendido,
-                tarjetas_acumuladas : jugador.tarjetas_acumuladas,
-            };
-            equipo.jugadores[jugadorIndex].jornadas_suspendido = updatedJugador.jornadas_suspendido;
-            equipo.jugadores[jugadorIndex].suspendido = updatedJugador.suspendido;
-            equipo.jugadores[jugadorIndex].tarjetas_acumuladas = updatedJugador.tarjetas_acumuladas;
-            
-            if (jugador.foto) {
-                equipo.jugadores[jugadorIndex].foto = newFotoUrl;
+
+            const updatedEquipo = await this.jugadores.modelJugadoresFindById(equipoId);
+            if (!updatedEquipo) {
+                throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
             }
-            await equipo.save();
-            return equipo;
+
+            updatedEquipo.jugadores[jugadorIndex].jornadas_suspendido = updatedJugador.jornadas_suspendido;
+            updatedEquipo.jugadores[jugadorIndex].suspendido = updatedJugador.suspendido;
+            updatedEquipo.jugadores[jugadorIndex].tarjetas_acumuladas = updatedJugador.tarjetas_acumuladas;
+
+            if (jugador.foto) {
+                updatedEquipo.jugadores[jugadorIndex].foto = newFotoUrl;
+            }
+
+            await updatedEquipo.save();
+            return updatedEquipo;
         } catch (err) {
             console.error(err);
             throw new Error("Error al editar jugador del equipo");

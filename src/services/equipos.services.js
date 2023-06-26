@@ -184,6 +184,7 @@ class EquiposService {
                         ...dt,
                         tarjetas_amarillas: 0,
                         tarjetas_rojas: 0,
+                        tarjetas_azul: 0,
                         amarilla_partido: [0,0,0,0,0,0,0,0,0,0,0,0,0],
                         roja_partido: [0,0,0,0,0,0,0,0,0,0,0,0,0],
                         azul_partido: [0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -191,8 +192,10 @@ class EquiposService {
                         figura: 0,
                         partidos: 0,
                         partidos_individual: ["No","No","No","No","No","No","No","No","No","No","No","No","No"],
+                        jornadas_suspendido:0,
                         suspendido_numero: 0,
                         suspendido: "No",
+                        tarjetas_acumuladas: 0
                     }
                 }),
                 fecha: ["No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido"],

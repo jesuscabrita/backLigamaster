@@ -45,3 +45,42 @@ export const editPartidosDT = async (req, res) => {
         return res.status(404).send({ status: "Error", message: error.message });
     }
 };
+
+export const editAmarillaDT = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const dtId = req.params.dtId;
+    const dt = req.body;
+    const amarillas = req.body.tarjetasAmarillas;
+    const rojas = req.body.tarjetasRojas;
+    try {
+        const updatedDT = await dtService.editarAmarillaDT(equipoId,dtId,dt,amarillas,rojas);
+        return res.status(200).send({ status: "OK", message: `El tecnico se editó correctamente`, updatedDT });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
+
+export const editRojaDT = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const dtId = req.params.dtId;
+    const dt = req.body;
+    const rojas = req.body.tarjetasRojas;
+    try {
+        const updatedDT = await dtService.editarRojaDT(equipoId,dtId,dt,rojas);
+        return res.status(200).send({ status: "OK", message: `El director tecnico se editó correctamente`, updatedDT });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
+
+export const editAzulDT = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const dtId = req.params.dtId;
+    const dt = req.body;
+    try {
+        const updatedDT = await dtService.editarAzulDT(equipoId,dtId,dt);
+        return res.status(200).send({ status: "OK", message: `El director tecnico se editó correctamente`, updatedDT });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
