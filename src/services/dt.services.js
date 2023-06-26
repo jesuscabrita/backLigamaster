@@ -269,11 +269,44 @@ class DTService {
                 newFotoUrl = result.secure_url;
             }
             const updatedDT = {
-                azul_partido_individual: dt.azul_partido_individual,
+                azul_partido: dt.azul_partido,
                 tarjetas_azul: dt.tarjetas_azul,
             };
-            equipo.director_tecnico[dtIndex].azul_partido_individual = updatedDT.azul_partido_individual;
+            equipo.director_tecnico[dtIndex].azul_partido = updatedDT.azul_partido;
             equipo.director_tecnico[dtIndex].tarjetas_azul = updatedDT.tarjetas_azul;
+            if (dt.foto) {
+                equipo.director_tecnico[dtIndex].foto = newFotoUrl;
+            }
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar tecnico del equipo");
+        }
+    };
+
+    editarFiguraDT = async (equipoId, directorTecnicoId, dt) => {
+        const equipo = await this.equipos.modelEquiposGetByID(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const dtIndex = equipo.director_tecnico.findIndex((p) => p._id == directorTecnicoId);
+        if (dtIndex === -1) {
+            throw new Error("El director tecnico no existe en el equipo");
+        }
+        try {
+            let newFotoUrl = equipo.director_tecnico[dtIndex].foto;
+            if (dt.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(dt.foto);
+                newFotoUrl = result.secure_url;
+            }
+            const updatedDT = {
+                figura_partido: dt.figura_partido,
+                figura: dt.figura,
+            };
+            equipo.director_tecnico[dtIndex].figura_partido = updatedDT.figura_partido;
+            equipo.director_tecnico[dtIndex].figura = updatedDT.figura;
+
             if (dt.foto) {
                 equipo.director_tecnico[dtIndex].foto = newFotoUrl;
             }

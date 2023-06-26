@@ -84,3 +84,15 @@ export const editAzulDT = async (req, res) => {
         return res.status(404).send({ status: "Error", message: error.message });
     }
 };
+
+export const editFiguraDT = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const dtId = req.params.dtId;
+    const dt = req.body;
+    try {
+        const updatedDT = await dtService.editarFiguraDT(equipoId,dtId,dt);
+        return res.status(200).send({ status: "OK", message: `El director tecnico se editó correctamente`, updatedDT });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
