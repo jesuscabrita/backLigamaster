@@ -1,6 +1,6 @@
 import express from "express";
 import { uploader } from "../middlewares/multer.js";
-import { addDT, deleteDT, editAmarillaDT, editAzulDT, editFiguraDT, editPartidosDT, editRojaDT, editarDT } from "../controllers/dt.controllers.js";
+import { addDT, deleteDT, editAmarillaDT, editAzulDT, editFiguraDT, editPartidosDT, editRojaDT, editSuspencionDT, editarDT } from "../controllers/dt.controllers.js";
 
 const router = express.Router();
 
@@ -12,5 +12,6 @@ router.put("/:equipoId/amarillasDT/:dtId", uploader.single("foto"), editAmarilla
 router.put("/:equipoId/rojasDT/:dtId", uploader.single("foto"), editRojaDT);
 router.put("/:equipoId/azulDT/:dtId", uploader.single("foto"), editAzulDT);
 router.put("/:equipoId/figurasDT/:dtId", uploader.single("foto"), editFiguraDT);
+router.put("/:equipoId/suspencionDT/:dtId", uploader.single("foto"), editSuspencionDT);
 
 export default router;

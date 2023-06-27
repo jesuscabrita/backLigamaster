@@ -1,3 +1,4 @@
+import { addDT } from "../controllers/dt.controllers.js";
 import { dtRepository } from "../repositories/dt.repository.js";
 import { equiposRepository } from "../repositories/equipos.repository.js";
 
@@ -315,6 +316,49 @@ class DTService {
         } catch (err) {
             console.error(err);
             throw new Error("Error al editar tecnico del equipo");
+        }
+    };
+
+    editarSuspencionDT = async (equipoId, directorTecnicoId, dt) => {
+        const equipo = await this.equipos.modelEquiposGetByID(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const dtIndex = equipo.director_tecnico.findIndex((p) => p._id == directorTecnicoId);
+        if (dtIndex === -1) {
+            throw new Error("El director tecnico no existe en el equipo");
+        }
+        try {
+            const updatedDT = {
+                jornadas_suspendido: dt.jornadas_suspendido,
+                suspendido: dt.suspendido,
+                tarjetas_acumuladas: dt.tarjetas_acumuladas,
+            };
+
+            let newFotoUrl = equipo.director_tecnico[dtIndex].foto;
+            if (dt.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(dt.foto);
+                newFotoUrl = result.secure_url;
+            }
+
+            const updatedEquipo = await this.equipos.modelEquiposGetByID(equipoId);
+            if (!updatedEquipo) {
+                throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+            }
+
+            updatedEquipo.director_tecnico[dtIndex].jornadas_suspendido = updatedDT.jornadas_suspendido;
+            updatedEquipo.director_tecnico[dtIndex].suspendido = updatedDT.suspendido;
+            updatedEquipo.director_tecnico[dtIndex].tarjetas_acumuladas = updatedDT.tarjetas_acumuladas;
+
+            if (dt.foto) {
+                updatedEquipo.director_tecnico[dtIndex].foto = newFotoUrl;
+            }
+
+            await updatedEquipo.save();
+            return updatedEquipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar jugador del equipo");
         }
     };
 

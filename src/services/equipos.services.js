@@ -101,7 +101,7 @@ class EquiposService {
             logo: newLogoUrl,
             puntaje_anterior: 0,
             foto_equipo: "",
-            banco_fondo: 500000,
+            banco_fondo: 10000000,
             tarjetasAmarillas: 0,
             tarjetasRojas: 0,
             director_tecnico: [],
