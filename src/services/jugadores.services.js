@@ -517,6 +517,96 @@ class JugadoresService {
             throw new Error("Error al editar el equipo");
         }
     }
+
+    editarLesionJugador = async (equipoId, jugadorId, jugador) => {
+        const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+        if (jugadorIndex === -1) {
+            throw new Error("El jugador no existe en el equipo");
+        }
+        try {
+            let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
+            if (jugador.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto);
+                newFotoUrl = result.secure_url;
+            }
+            const updatedJugador = {
+                lesion: jugador.lesion,
+            };
+            equipo.jugadores[jugadorIndex].lesion = updatedJugador.lesion;
+            if (jugador.foto) {
+                equipo.jugadores[jugadorIndex].foto = newFotoUrl;
+            }
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar jugador del equipo");
+        }
+    };
+
+    editarJornadaJugador = async (equipoId, jugadorId, jugador) => {
+        const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+        if (jugadorIndex === -1) {
+            throw new Error("El jugador no existe en el equipo");
+        }
+        try {
+            let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
+            if (jugador.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto);
+                newFotoUrl = result.secure_url;
+            }
+            const updatedJugador = {
+                jornadas_suspendido: jugador.jornadas_suspendido,
+            };
+            equipo.jugadores[jugadorIndex].jornadas_suspendido = updatedJugador.jornadas_suspendido;
+            if (jugador.foto) {
+                equipo.jugadores[jugadorIndex].foto = newFotoUrl;
+            }
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar jugador del equipo");
+        }
+    };
+
+    editarCapitanJugador = async (equipoId, jugadorId, jugador) => {
+        const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+        if (jugadorIndex === -1) {
+            throw new Error("El jugador no existe en el equipo");
+        }
+        try {
+            let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
+            if (jugador.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto);
+                newFotoUrl = result.secure_url;
+            }
+            const updatedJugador = {
+                capitan: jugador.capitan,
+            };
+            equipo.jugadores[jugadorIndex].capitan = updatedJugador.capitan;
+            if (jugador.foto) {
+                equipo.jugadores[jugadorIndex].foto = newFotoUrl;
+            }
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar jugador del equipo");
+        }
+    };
 }
 
 export const jugadoresService = new JugadoresService();

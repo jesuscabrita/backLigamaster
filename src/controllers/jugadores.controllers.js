@@ -156,3 +156,39 @@ export const deleteJugador = async (req, res) => {
         return res.status(400).send({ status: "Error", message: err.message });
     }
 };
+
+export const editLesionJugador = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    const jugador = req.body;
+    try {
+        const updatedJugador = await jugadoresService.editarLesionJugador(equipoId,jugadorId,jugador);
+        return res.status(200).send({ status: "OK", message: `El jugador se editó correctamente`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
+
+export const editJornadaJugador = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    const jugador = req.body;
+    try {
+        const updatedJugador = await jugadoresService.editarJornadaJugador(equipoId,jugadorId,jugador);
+        return res.status(200).send({ status: "OK", message: `El jugador se editó correctamente`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
+
+export const editCapitanJugador = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    const jugador = req.body;
+    try {
+        const updatedJugador = await jugadoresService.editarCapitanJugador(equipoId,jugadorId,jugador);
+        return res.status(200).send({ status: "OK", message: `El jugador se editó correctamente`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
