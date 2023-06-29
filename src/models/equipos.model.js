@@ -72,7 +72,10 @@ const directorTecnicoSchema = new Schema(
 const delegadoSchema = new Schema(
     {
         name: { type: String },
-        telefono: { type: String }
+        telefono: { type: String },
+        correo: { type: String },
+        logo: { type: String },
+        equipo: { type: String }
     },
     { timestamps: true }
 );
@@ -96,7 +99,7 @@ const equiposSchema = new Schema(
         tarjetasAmarillas: { type: Number },
         tarjetasRojas: { type: Number },
         director_tecnico: [directorTecnicoSchema],
-        delegado: delegadoSchema,
+        delegado: [delegadoSchema],
         fecha: { type: [String] },
         arbitro: { type: [String] },
         estadio: { type: String },

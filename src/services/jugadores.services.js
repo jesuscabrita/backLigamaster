@@ -60,8 +60,17 @@ class JugadoresService {
             } else {
                 newFotoUrl = '';
             }
+
+            const capitalizeFirstLetter = (str) => {
+                return str.toLowerCase().replace(/(?:^|\s)\S/g, function (char) {
+                    return char.toUpperCase();
+                });
+            };
+            const nombreCompleto = jugador.name.trim().split(' ');
+            const nombreCapitalizado = nombreCompleto.map((nombre) => capitalizeFirstLetter(nombre));
+
             const nuevoJugador = {
-                name: jugador.name.trim(),
+                name: nombreCapitalizado.join(' '),
                 edad: jugador.edad,
                 capitan: 'No',
                 posicion: jugador.posicion.trim(),

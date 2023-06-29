@@ -105,7 +105,7 @@ class EquiposService {
             tarjetasAmarillas: 0,
             tarjetasRojas: 0,
             director_tecnico: [],
-            delegado: {},
+            delegado: [],
             fecha: ["No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido"],
             arbitro: ["No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido"],
             estadio: 'No definido',
@@ -177,8 +177,10 @@ class EquiposService {
                 last5: ["neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral"],
                 puntaje_anterior: 0,
                 foto_equipo: "",
+                // banco_fondo:10000000,
                 tarjetasAmarillas: 0,
                 tarjetasRojas: 0,
+                // director_tecnico: [],
                 director_tecnico: equipoActual.director_tecnico.map((dt) =>{
                     return{
                         ...dt,
