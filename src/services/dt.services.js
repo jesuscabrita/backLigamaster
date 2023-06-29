@@ -362,6 +362,38 @@ class DTService {
         }
     };
 
+    editarJornadaDT = async (equipoId, directorTecnicoId, dt) => {
+        const equipo = await this.equipos.modelEquiposGetByID(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const dtIndex = equipo.director_tecnico.findIndex((p) => p._id == directorTecnicoId);
+        if (dtIndex === -1) {
+            throw new Error("El director tecnico no existe en el equipo");
+        }
+
+        let newFotoUrl = equipo.director_tecnico[dtIndex].foto;
+            if (dt.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(dt.foto);
+                newFotoUrl = result.secure_url;
+            }
+        try {
+            const updatedDT = {
+                jornadas_suspendido: dt.jornadas_suspendido,
+            };
+
+            equipo.director_tecnico[dtIndex].jornadas_suspendido = updatedDT.jornadas_suspendido;
+            if (dt.foto) {
+                equipo.director_tecnico[dtIndex].foto = newFotoUrl;
+            }
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar director tecnico del equipo");
+        }
+    };
+
 }
 
 export const dtService = new DTService();

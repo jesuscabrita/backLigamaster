@@ -587,6 +587,11 @@ class JugadoresService {
         if (jugadorIndex === -1) {
             throw new Error("El jugador no existe en el equipo");
         }
+        const existeCapitan = equipo.jugadores.find((p) => p.capitan === 'Si');
+        if (existeCapitan && jugador.capitan === 'Si') {
+            const nombreCapitan = existeCapitan.name; 
+            throw new Error(`Ya hay un jugador designado como capitán en el equipo: ${nombreCapitan}`);
+        }
         try {
             let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
             if (jugador.foto) {
