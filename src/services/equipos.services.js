@@ -64,6 +64,16 @@ class EquiposService {
         }
     }
 
+    eliminarImagenCloudinary = async (publicId) => {
+        try {
+            const result = await this.equipos.claudinaryDestroy(publicId);
+            console.log('Imagen eliminada:', result.result);
+        } catch (error) {
+            console.error('Error al eliminar la imagen:', error);
+            throw new Error('Error al eliminar la imagen de Cloudinary');
+        }
+    };
+
     addEquipo = async (equipo) => {
         this.validateEquiposData(equipo.name, equipo.correo, equipo.instagram);
         if (!this.validarEmail(equipo.correo)) {
@@ -139,6 +149,54 @@ class EquiposService {
             throw new Error(`No se encontró el equipo con ID ${id}`);
         }
 
+        const equipoActual = equipos[equipoIndex];
+        let logoChanged = false;
+        
+        if (changes.logo && changes.logo !== equipoActual.logo) {
+            logoChanged = true;
+        }
+        
+        if (!changes.logo || changes.logo === equipoActual.logo) {
+            delete changes.logo;
+        }
+
+        const obtenerPublicIdDesdeUrl = (url) => {
+            // La implementación real dependerá de cómo estés estructurando tus URLs en Cloudinary
+            // Aquí se muestra un ejemplo simple de cómo extraer el public_id de una URL
+            const publicIdRegex = /\/([^/]+)\.\w+$/;
+            const match = url.match(publicIdRegex);
+            if (match && match.length >= 2) {
+                return match[1];
+            } else {
+                throw new Error('No se pudo extraer el public_id de la URL');
+            }
+            };
+
+        if (logoChanged) {
+            // Eliminar el logo anterior de Cloudinary
+            if (equipoActual.logo) {
+                // Utiliza la lógica adecuada para eliminar una imagen de Cloudinary
+                const publicId = obtenerPublicIdDesdeUrl(equipoActual.logo);
+                await this.eliminarImagenCloudinary(publicId);
+            }
+            }
+
+        const generarNumeroAleatorio =()=> {
+            // Lógica para generar un número aleatorio
+            // Puedes usar Math.random() o una biblioteca como 'random' para generar un número aleatorio
+            return Math.floor(Math.random() * 1000000); // Genera un número aleatorio entre 0 y 999999
+        }
+        
+        if (changes.logo) {
+            // Cargar y actualizar la nueva imagen del logo en Cloudinary
+            const nombreCorto = this.equipos.generarNombreCorto();
+            const nombreAleatorio = generarNumeroAleatorio();
+            const nombreImagen = `${nombreCorto}_${nombreAleatorio}`;
+            const result = await this.equipos.claudinaryUploader(changes.logo, nombreImagen);
+            changes.logo = result.secure_url;
+            }
+
+
         const updatedProduct = {
             ...equipos[equipoIndex],
             ...changes,
@@ -156,8 +214,22 @@ class EquiposService {
         }
 
         const logo = equipos[index].logo;
-        if (logo && logo.public_id) {
-            await this.equipos.claudinaryDestroy(logo.public_id);
+
+        const obtenerPublicIdDesdeUrl = (url) => {
+            // La implementación real dependerá de cómo estés estructurando tus URLs en Cloudinary
+            // Aquí se muestra un ejemplo simple de cómo extraer el public_id de una URL
+            const publicIdRegex = /\/([^/]+)\.\w+$/;
+            const match = url.match(publicIdRegex);
+            if (match && match.length >= 2) {
+                return match[1];
+            } else {
+                throw new Error("No se pudo extraer el public_id de la URL");
+            }
+        }
+
+        if (logo) {
+            const publicId = obtenerPublicIdDesdeUrl(logo);
+            await this.eliminarImagenCloudinary(publicId);
         }
         equipos.splice(index, 1);
         await this.equipos.modelEquiposDelete(id);

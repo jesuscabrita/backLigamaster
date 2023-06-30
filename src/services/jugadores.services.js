@@ -31,6 +31,16 @@ class JugadoresService {
         }
     }
 
+    eliminarImagenCloudinary = async (publicId) => {
+        try {
+            const result = await this.equipoCloudinary.claudinaryDestroy(publicId);
+            console.log('Imagen eliminada:', result.result);
+        } catch (error) {
+            console.error('Error al eliminar la imagen:', error);
+            throw new Error('Error al eliminar la imagen de Cloudinary');
+        }
+    };
+
     addJugadorToEquipo = async (equipoId, jugador) => {
         this.validateJugadorData(
             jugador.name,
@@ -53,7 +63,7 @@ class JugadoresService {
             throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
         }
 
-        const generarNumeroAleatorio =()=> {
+        const generarNumeroAleatorio = () => {
             // Lógica para generar un número aleatorio
             // Puedes usar Math.random() o una biblioteca como 'random' para generar un número aleatorio
             return Math.floor(Math.random() * 1000000); // Genera un número aleatorio entre 0 y 999999
@@ -65,7 +75,7 @@ class JugadoresService {
                 const nombreCorto = this.jugadores.generarNombreCorto(); // Genera una cadena corta única
                 const nombreAleatorio = generarNumeroAleatorio(); // Genera un número aleatorio
                 const nombreImagen = `${nombreCorto}_${nombreAleatorio}`;
-                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto,nombreImagen);
+                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto, nombreImagen);
                 newFotoUrl = result.secure_url;
             } else {
                 newFotoUrl = '';
@@ -132,6 +142,25 @@ class JugadoresService {
                 throw new Error("El jugador no existe en el equipo");
             }
 
+            const jugador = equipo.jugadores[jugadorIndex];
+
+            const obtenerPublicIdDesdeUrl = (url) => {
+                // La implementación real dependerá de cómo estés estructurando tus URLs en Cloudinary
+                // Aquí se muestra un ejemplo simple de cómo extraer el public_id de una URL
+                const publicIdRegex = /\/([^/]+)\.\w+$/;
+                const match = url.match(publicIdRegex);
+                if (match && match.length >= 2) {
+                    return match[1];
+                } else {
+                    throw new Error("No se pudo extraer el public_id de la URL");
+                }
+            }
+            // Eliminar la foto de Cloudinary si existe
+            if (jugador.foto) {
+                const publicId = obtenerPublicIdDesdeUrl(jugador.foto);
+                await this.eliminarImagenCloudinary(publicId);
+            }
+
             equipo.jugadores.splice(jugadorIndex, 1);
             await equipo.save();
             return equipo;
@@ -156,11 +185,60 @@ class JugadoresService {
         }
 
         try {
-            let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
-            if (jugador.foto) {
-                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto);
-                newFotoUrl = result.secure_url;
+
+            const jugadorActual = equipo.jugadores[jugadorIndex];
+            let fotoChanged = false;
+
+            if (jugador.foto && jugador.foto !== jugadorActual.foto) {
+                fotoChanged = true;
             }
+
+            let newFotoUrl; // Variable para almacenar la nueva URL de la foto
+
+            if (!jugador.foto || jugador.foto === jugadorActual.foto) {
+                jugador.foto = jugadorActual.foto;
+            } else {
+                const obtenerPublicIdDesdeUrl = (url) => {
+                    // La implementación real dependerá de cómo estés estructurando tus URLs en Cloudinary
+                    // Aquí se muestra un ejemplo simple de cómo extraer el public_id de una URL
+                    const publicIdRegex = /\/([^/]+)\.\w+$/;
+                    const match = url.match(publicIdRegex);
+                    if (match && match.length >= 2) {
+                        return match[1];
+                    } else {
+                        throw new Error("No se pudo extraer el public_id de la URL");
+                    }
+                };
+
+                if (fotoChanged) {
+                    // Eliminar el logo anterior de Cloudinary
+                    if (jugadorActual.foto) {
+                        // Utiliza la lógica adecuada para eliminar una imagen de Cloudinary
+                        const publicId = obtenerPublicIdDesdeUrl(jugadorActual.foto);
+                        await this.eliminarImagenCloudinary(publicId);
+                    }
+                }
+
+                const generarNumeroAleatorio = () => {
+                    // Lógica para generar un número aleatorio
+                    // Puedes usar Math.random() o una biblioteca como 'random' para generar un número aleatorio
+                    return Math.floor(Math.random() * 1000000); // Genera un número aleatorio entre 0 y 999999
+                };
+
+                if (jugador.foto) {
+                    // Cargar y actualizar la nueva imagen del logo en Cloudinary
+                    const nombreCorto = this.jugadores.generarNombreCorto();
+                    const nombreAleatorio = generarNumeroAleatorio();
+                    const nombreImagen = `${nombreCorto}_${nombreAleatorio}`;
+                    const result = await this.equipoCloudinary.claudinaryUploader(
+                        jugador.foto,
+                        nombreImagen
+                    );
+                    newFotoUrl = result.secure_url; // Asignar la nueva URL de la foto a newFotoUrl
+                    jugador.foto = newFotoUrl;
+                }
+            }
+
             const updatedJugador = {
                 ...equipo.jugadores[jugadorIndex],
                 name: jugador.name.trim(),
@@ -193,7 +271,7 @@ class JugadoresService {
                 twitter: equipo.jugadores[jugadorIndex].twitter,
                 equipo: equipo.jugadores[jugadorIndex].equipo,
                 logo: equipo.jugadores[jugadorIndex].logo,
-                foto: newFotoUrl,
+                foto: newFotoUrl || jugador.foto,
                 _id: equipo.jugadores[jugadorIndex]._id,
                 createdAt: equipo.jugadores[jugadorIndex].createdAt,
                 updatedAt: equipo.jugadores[jugadorIndex].updatedAt
@@ -608,7 +686,7 @@ class JugadoresService {
         }
         const existeCapitan = equipo.jugadores.find((p) => p.capitan === 'Si');
         if (existeCapitan && jugador.capitan === 'Si') {
-            const nombreCapitan = existeCapitan.name; 
+            const nombreCapitan = existeCapitan.name;
             throw new Error(`Ya hay un jugador designado como capitán en el equipo: ${nombreCapitan}`);
         }
         try {

@@ -102,7 +102,7 @@ class EquiposRepository {
 
     claudinaryDestroy = (logo) => {
         return cloudinary.uploader.destroy(logo);
-    }
+    } 
 }
 
 export const equiposRepository = new EquiposRepository();
