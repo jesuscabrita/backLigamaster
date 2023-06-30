@@ -1,4 +1,5 @@
 import { equiposModel } from "../models/equipos.model.js";
+import { v4 as uuidv4 } from 'uuid';
 
 class DTRepository {
     constructor() {}
@@ -9,6 +10,10 @@ class DTRepository {
 
     modelDTEdit = (equipoId, equipo) => {
         return equiposModel.findByIdAndUpdate(equipoId, { director_tecnico: equipo });
+    }
+
+    generarNombreCorto =()=>{
+        return uuidv4().substr(0, 8); 
     }
 
 }

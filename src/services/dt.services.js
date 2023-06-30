@@ -19,9 +19,19 @@ class DTService {
             throw new Error(`Ya existe un director técnico (${nombreDTExistente}) en el equipo`);
         }
     try {
+
+        const generarNumeroAleatorio =()=> {
+            // Lógica para generar un número aleatorio
+            // Puedes usar Math.random() o una biblioteca como 'random' para generar un número aleatorio
+            return Math.floor(Math.random() * 1000000); // Genera un número aleatorio entre 0 y 999999
+        }
+
         let newFotoUrl;
         if (dt.foto) {
-            const result = await this.equipoCloudinary.claudinaryUploader(dt.foto);
+            const nombreCorto = this.equipos.generarNombreCorto(); // Genera una cadena corta única
+            const nombreAleatorio = generarNumeroAleatorio(); // Genera un número aleatorio
+            const nombreImagen = `${nombreCorto}_${nombreAleatorio}`;
+            const result = await this.equipoCloudinary.claudinaryUploader(dt.foto,nombreImagen);
             newFotoUrl = result.secure_url;
         } else {
             newFotoUrl = '';

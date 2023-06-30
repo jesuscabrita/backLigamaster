@@ -1,4 +1,5 @@
 import { equiposModel } from "../models/equipos.model.js";
+import { v4 as uuidv4 } from 'uuid';
 
 class JugadoresRepository {
     constructor() {}
@@ -9,6 +10,10 @@ class JugadoresRepository {
 
     modelJugadoresEdit = (equipoId, equipo) => {
         return equiposModel.findByIdAndUpdate(equipoId, { jugadores: equipo });
+    }
+
+    generarNombreCorto =()=>{
+        return uuidv4().substr(0, 8); 
     }
 }
 

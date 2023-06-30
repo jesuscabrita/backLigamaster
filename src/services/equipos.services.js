@@ -79,9 +79,18 @@ class EquiposService {
             throw new Error(`El equipo "${equipo.name}" ya existe`);
         }
 
+        const generarNumeroAleatorio =()=> {
+            // Lógica para generar un número aleatorio
+            // Puedes usar Math.random() o una biblioteca como 'random' para generar un número aleatorio
+            return Math.floor(Math.random() * 1000000); // Genera un número aleatorio entre 0 y 999999
+        }
+
         let newLogoUrl;
         if (equipo.logo) {
-            const result = await this.equipos.claudinaryUploader(equipo.logo);
+            const nombreCorto = this.equipos.generarNombreCorto(); // Genera una cadena corta única
+            const nombreAleatorio = generarNumeroAleatorio(); // Genera un número aleatorio
+            const nombreImagen = `${nombreCorto}_${nombreAleatorio}`;
+            const result = await this.equipos.claudinaryUploader(equipo.logo, nombreImagen);
             newLogoUrl = result.secure_url;
         } else {
             newLogoUrl = '';

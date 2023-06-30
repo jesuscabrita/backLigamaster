@@ -2,6 +2,7 @@ import { API_KEY, API_SECRET, CLOUD_NAME, EMAIL_PASSWORD, EMAIL_USERNAME, HOST_E
 import { equiposModel } from "../models/equipos.model.js";
 import nodemailer from 'nodemailer';
 import { v2 as cloudinary } from 'cloudinary';
+import { v4 as uuidv4 } from 'uuid';
 
 cloudinary.config({
     cloud_name: CLOUD_NAME,
@@ -85,8 +86,18 @@ class EquiposRepository {
         return transporter.sendMail(correo);
     }
 
-    claudinaryUploader = (logo) => {
-        return cloudinary.uploader.upload(logo)
+    claudinaryUploader = (logo,nombreImagen) => {
+        return cloudinary.uploader.upload(logo, {
+            public_id: nombreImagen,
+            transformation: [
+              { width: 200, height: 200, crop: 'limit' }, // Especifica el tamaño personalizado deseado
+              { quality: 'auto' } // Ajusta la calidad de la imagen automáticamente
+            ]
+        });
+    }
+
+    generarNombreCorto =()=>{
+        return uuidv4().substr(0, 8); 
     }
 
     claudinaryDestroy = (logo) => {

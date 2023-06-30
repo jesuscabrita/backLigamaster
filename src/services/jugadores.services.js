@@ -52,10 +52,20 @@ class JugadoresService {
         if (dorsalExistente) {
             throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
         }
+
+        const generarNumeroAleatorio =()=> {
+            // Lógica para generar un número aleatorio
+            // Puedes usar Math.random() o una biblioteca como 'random' para generar un número aleatorio
+            return Math.floor(Math.random() * 1000000); // Genera un número aleatorio entre 0 y 999999
+        }
+
         try {
             let newFotoUrl;
             if (jugador.foto) {
-                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto);
+                const nombreCorto = this.jugadores.generarNombreCorto(); // Genera una cadena corta única
+                const nombreAleatorio = generarNumeroAleatorio(); // Genera un número aleatorio
+                const nombreImagen = `${nombreCorto}_${nombreAleatorio}`;
+                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto,nombreImagen);
                 newFotoUrl = result.secure_url;
             } else {
                 newFotoUrl = '';
