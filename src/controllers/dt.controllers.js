@@ -4,7 +4,7 @@ export const addDT = async (req, res) => {
     try {
         const equipoId = req.params.equipoId;
         const dt = req.body;
-        const equipo = await dtService.addDT(equipoId,dt);
+        const equipo = await dtService.crearDT(equipoId,dt);
         return res.status(201).send({ status: 'Succes', message: 'Se creó el director tecnico correctamente', director_tecnico: equipo });
     } catch (err) {
         return res.status(400).send({ status: "Error", message: err.message });

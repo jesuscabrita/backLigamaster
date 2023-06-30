@@ -41,7 +41,21 @@ class JugadoresService {
         }
     };
 
-    addJugadorToEquipo = async (equipoId, jugador) => {
+    generarNumeroAleatorio = () => {
+        return Math.floor(Math.random() * 1000000);
+    }
+
+    obtenerPublicIdDesdeUrl = (url) => {
+        const publicIdRegex = /\/([^/]+)\.\w+$/;
+        const match = url.match(publicIdRegex);
+        if (match && match.length >= 2) {
+            return match[1];
+        } else {
+            throw new Error("No se pudo extraer el public_id de la URL");
+        }
+    }
+
+    crearJugador = async (equipoId, jugador) => {
         this.validateJugadorData(
             jugador.name,
             jugador.edad,
@@ -63,17 +77,11 @@ class JugadoresService {
             throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
         }
 
-        const generarNumeroAleatorio = () => {
-            // Lógica para generar un número aleatorio
-            // Puedes usar Math.random() o una biblioteca como 'random' para generar un número aleatorio
-            return Math.floor(Math.random() * 1000000); // Genera un número aleatorio entre 0 y 999999
-        }
-
         try {
             let newFotoUrl;
             if (jugador.foto) {
-                const nombreCorto = this.jugadores.generarNombreCorto(); // Genera una cadena corta única
-                const nombreAleatorio = generarNumeroAleatorio(); // Genera un número aleatorio
+                const nombreCorto = this.jugadores.generarNombreCorto();
+                const nombreAleatorio = this.generarNumeroAleatorio();
                 const nombreImagen = `${nombreCorto}_${nombreAleatorio}`;
                 const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto, nombreImagen);
                 newFotoUrl = result.secure_url;
@@ -131,7 +139,7 @@ class JugadoresService {
         }
     }
 
-    eliminarJugadorDeEquipo = async (equipoId, jugadorId) => {
+    eliminarJugador = async (equipoId, jugadorId) => {
         try {
             const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
             if (!equipo) {
@@ -144,20 +152,8 @@ class JugadoresService {
 
             const jugador = equipo.jugadores[jugadorIndex];
 
-            const obtenerPublicIdDesdeUrl = (url) => {
-                // La implementación real dependerá de cómo estés estructurando tus URLs en Cloudinary
-                // Aquí se muestra un ejemplo simple de cómo extraer el public_id de una URL
-                const publicIdRegex = /\/([^/]+)\.\w+$/;
-                const match = url.match(publicIdRegex);
-                if (match && match.length >= 2) {
-                    return match[1];
-                } else {
-                    throw new Error("No se pudo extraer el public_id de la URL");
-                }
-            }
-            // Eliminar la foto de Cloudinary si existe
             if (jugador.foto) {
-                const publicId = obtenerPublicIdDesdeUrl(jugador.foto);
+                const publicId = this.obtenerPublicIdDesdeUrl(jugador.foto);
                 await this.eliminarImagenCloudinary(publicId);
             }
 
@@ -170,7 +166,7 @@ class JugadoresService {
         }
     }
 
-    editarJugadorEnEquipo = async (equipoId, jugadorId, jugador) => {
+    editarJugador = async (equipoId, jugadorId, jugador) => {
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
@@ -185,7 +181,6 @@ class JugadoresService {
         }
 
         try {
-
             const jugadorActual = equipo.jugadores[jugadorIndex];
             let fotoChanged = false;
 
@@ -193,48 +188,27 @@ class JugadoresService {
                 fotoChanged = true;
             }
 
-            let newFotoUrl; // Variable para almacenar la nueva URL de la foto
-
+            let newFotoUrl; 
             if (!jugador.foto || jugador.foto === jugadorActual.foto) {
                 jugador.foto = jugadorActual.foto;
             } else {
-                const obtenerPublicIdDesdeUrl = (url) => {
-                    // La implementación real dependerá de cómo estés estructurando tus URLs en Cloudinary
-                    // Aquí se muestra un ejemplo simple de cómo extraer el public_id de una URL
-                    const publicIdRegex = /\/([^/]+)\.\w+$/;
-                    const match = url.match(publicIdRegex);
-                    if (match && match.length >= 2) {
-                        return match[1];
-                    } else {
-                        throw new Error("No se pudo extraer el public_id de la URL");
-                    }
-                };
 
-                if (fotoChanged) {
-                    // Eliminar el logo anterior de Cloudinary
-                    if (jugadorActual.foto) {
-                        // Utiliza la lógica adecuada para eliminar una imagen de Cloudinary
-                        const publicId = obtenerPublicIdDesdeUrl(jugadorActual.foto);
-                        await this.eliminarImagenCloudinary(publicId);
-                    }
+            if (fotoChanged) {
+                if (jugadorActual.foto) {
+                    const publicId = this.obtenerPublicIdDesdeUrl(jugadorActual.foto);
+                    await this.eliminarImagenCloudinary(publicId);
                 }
-
-                const generarNumeroAleatorio = () => {
-                    // Lógica para generar un número aleatorio
-                    // Puedes usar Math.random() o una biblioteca como 'random' para generar un número aleatorio
-                    return Math.floor(Math.random() * 1000000); // Genera un número aleatorio entre 0 y 999999
-                };
+            }
 
                 if (jugador.foto) {
-                    // Cargar y actualizar la nueva imagen del logo en Cloudinary
                     const nombreCorto = this.jugadores.generarNombreCorto();
-                    const nombreAleatorio = generarNumeroAleatorio();
+                    const nombreAleatorio = this.generarNumeroAleatorio();
                     const nombreImagen = `${nombreCorto}_${nombreAleatorio}`;
                     const result = await this.equipoCloudinary.claudinaryUploader(
                         jugador.foto,
                         nombreImagen
                     );
-                    newFotoUrl = result.secure_url; // Asignar la nueva URL de la foto a newFotoUrl
+                    newFotoUrl = result.secure_url;
                     jugador.foto = newFotoUrl;
                 }
             }

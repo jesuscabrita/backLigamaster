@@ -24,7 +24,7 @@ export const getEquiposById = async (req, res) => {
 export const addEquipos = async (req, res) => {
     try {
         const equipo= req.body;
-        const newEquipo = await equiposService.addEquipo(equipo);
+        const newEquipo = await equiposService.crearEquipo(equipo);
             return res.status(201).send({ status: 'Succes', message: 'Se creó el equipo correctamente', equipo: newEquipo });
     } catch (err) {
         return res.status(400).send({ status: "Error", message: err.message });

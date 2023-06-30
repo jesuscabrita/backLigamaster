@@ -4,7 +4,7 @@ export const addDelegado = async (req, res) => {
     try {
         const equipoId = req.params.equipoId;
         const delegado = req.body;
-        const equipo = await delegadoService.addDelegado(equipoId,delegado);
+        const equipo = await delegadoService.crearDelegado(equipoId,delegado);
         return res.status(201).send({ status: 'Succes', message: 'Se creó el delegado correctamente', director_tecnico: equipo });
     } catch (err) {
         return res.status(400).send({ status: "Error", message: err.message });

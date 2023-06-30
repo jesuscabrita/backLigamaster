@@ -90,8 +90,8 @@ class EquiposRepository {
         return cloudinary.uploader.upload(logo, {
             public_id: nombreImagen,
             transformation: [
-              { width: 200, height: 200, crop: 'limit' }, // Especifica el tamaño personalizado deseado
-              { quality: 'auto' } // Ajusta la calidad de la imagen automáticamente
+                { width: 200, height: 200, crop: 'limit' },
+                { quality: 'auto' }
             ]
         });
     }
