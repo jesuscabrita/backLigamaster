@@ -36,11 +36,13 @@ export const loginUser = async (req, res) => {
         const { email, password } = req.body;
         const result = await userService.loginUser(email, password, req, res);
         if (result.status === "error") {
-            return res.status(400).send({result});
+            console.log('result',result);
+            return res.status(400).send({status:'Error', message: result.error});
         }
         res.send(result);
     } catch (error) {
-        return res.status(500).send({ status: "error", error: error });
+        console.log('erro',error);
+        return res.status(500).send({ status: "Error", message: err.message });
     }
 };
 
@@ -53,6 +55,6 @@ export const logoutUser = async (req, res) => {
             return res.send(result);
         }
     } catch (error) {
-        return res.status(500).send({ status: "error", error: error });
+        return res.status(500).send({status: "Error", message: err.message  });
     }
 };
