@@ -32,7 +32,7 @@ app.use(
     session({
         store: MongoStore.create({
             mongoUrl: MONGODB,
-            ttl: 3600,
+            ttl: 7200,
         }),
         resave: true,
         saveUninitialized: false,
