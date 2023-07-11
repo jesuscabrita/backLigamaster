@@ -1,11 +1,6 @@
 import winston from "winston";
-import path from "path";
-import { fileURLToPath } from "url";
 import { NODE_ENV } from "../config.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const logDir = path.join(__dirname, "../logs");
+import path from "path";
 
 const customLevelOptions = {
     levels: {
@@ -44,7 +39,7 @@ const productionLogger = winston.createLogger({
     levels: customLevelOptions.levels,
     transports: [
         new winston.transports.File({
-            filename: path.join(logDir, "errors.log"),
+            filename: path.join(process.cwd(), "logs", "errors.log"),
             level: "info",
             format: winston.format.combine(
                 winston.format.simple(),
