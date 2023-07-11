@@ -40,7 +40,7 @@ app.use(
     })
 );
 
-plugin_Rutas(app, cors())
+plugin_Rutas(app)
 
 app.listen(PORT, () => {
     console.log(`Servidor corre en el puerto ${PORT}`);

@@ -5,11 +5,11 @@ import jugadoresRouter from "./jugadores.router.js";
 import loggerRouter from "./logger.router.js";
 import userRouter from "./user.router.js";
 
-export const  plugin_Rutas = (app, cors) => {
-    app.use("/api/liga", cors, jugadoresRouter);
-    app.use("/api/liga", cors, equiposRouter);
-    app.use("/api/liga", cors, dtRouter);
-    app.use("/api/liga", cors, delegadoRouter);
-    app.use("/loggerTest", cors, loggerRouter);
-    app.use("/api/user", cors, userRouter);
+export const  plugin_Rutas = (app) => {
+    app.use("/api/liga", jugadoresRouter);
+    app.use("/api/liga", equiposRouter);
+    app.use("/api/liga", dtRouter);
+    app.use("/api/liga", delegadoRouter);
+    app.use("/loggerTest", loggerRouter);
+    app.use("/api/user", userRouter);
 }
