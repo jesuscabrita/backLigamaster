@@ -4,7 +4,7 @@
     "name": "liga-master",
     "builds": [
         {
-            "src": "src/app.js",
+            "src": "./src/app.js",
             "use": "@vercel/node"
         }
     ],
