@@ -1,8 +1,17 @@
 {
-    "rewrites": [
+    "version": 2,
+    "framework":"node",
+    "name": "liga-master",
+    "builds": [
         {
-            "source": "/(.*)",
-            "destination": "src/app.js"
+            "src": "/src/app.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "/src/app.js"
         }
     ],
     "env": {
