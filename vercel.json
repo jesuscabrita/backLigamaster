@@ -2,26 +2,26 @@
     "version": 2,
     "builds": [
         {
-            "src": "src/app.js",
+            "src": "./src/app.js",
             "use": "@vercel/node"
         }
     ],
     "routes": [
         {
             "src": "/api/liga/(.*)",
-            "dest": "src/app.js"
+            "dest": "./src/app.js"
         },
         {
             "src": "/loggerTest/(.*)",
-            "dest": "src/app.js"
+            "dest": "./src/app.js"
         },
         {
             "src": "/api/user/(.*)",
-            "dest": "src/app.js"
+            "dest": "./src/app.js"
         },
         {
             "src": "/(.*)",
-            "dest": "src/app.js"
+            "dest": "./src/app.js"
         }
     ]
 }
