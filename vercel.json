@@ -2,13 +2,7 @@
     "rewrites": [
         {
             "source": "/(.*)",
-            "destination": "/api/$1"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/.*",
-            "dest": "/api/app.js"
+            "destination": "/app.js"
         }
     ],
     "env": {
