@@ -4,14 +4,14 @@
     "name": "liga-master",
     "builds": [
         {
-            "src": "/app.js",
+            "src": "src/app.js",
             "use": "@vercel/node"
         }
     ],
     "routes": [
         {
-            "src": "/(.*)",
-            "dest": "/app.js"
+            "src": "/api/liga",
+            "dest": "src/app.js"
         }
     ],
     "env": {
