@@ -1,0 +1,31 @@
+{
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": "/$1"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/app.js"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/.*",
+            "dest": "/app.js"
+        }
+    ],
+    "env": {
+        "PORT": 8080,
+        "MONGODB": "mongodb+srv://jesusarnaldo115:22338932@cluster0.pkwdkim.mongodb.net/ligamaster",
+        "CLOUD_NAME": "jesuscabrita",
+        "API_KEY": "189747391238272",
+        "API_SECRET": "DEY5MqdNI0j3c8lL3jJA9vdfvHE",
+        "EMAIL_USERNAME": "jesusarnaldo115@gmail.com",
+        "EMAIL_PASSWORD": "zkgcmsobbcamxusv",
+        "PORT_EMAIL": 587,
+        "HOST_EMAIL": "smtp.gmail.com",
+        "NODE_ENV": "development",
+        "SESSION_SECRET": "jdhfgsje"
+    }
+}
