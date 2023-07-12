@@ -1,24 +1,15 @@
 {
     "version": 2,
-    "functions": {
-        "api": {
-            "runtime": "vercel-node@1.9.1",
-            "memory": 1024
+    "builds": [
+        {
+            "src": "src/index.js",
+            "use": "@vercel/node"
         }
-    },
+    ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "/src/index.js",
-            "methods": [
-                "GET",
-                "POST",
-                "PUT",
-                "PATCH",
-                "DELETE",
-                "HEAD",
-                "OPTIONS"
-            ]
+            "dest": "src/index.js"
         }
     ],
     "env": {
