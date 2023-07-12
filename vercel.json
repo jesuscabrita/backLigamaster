@@ -1,17 +1,24 @@
 {
     "version": 2,
-    "framework":"node",
-    "name": "liga-master",
-    "builds": [
-        {
-            "src": "./src/index.js",
-            "use": "@vercel/node"
+    "functions": {
+        "api": {
+            "runtime": "vercel-node@1.9.1",
+            "memory": 1024
         }
-    ],
+    },
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "/"
+            "dest": "/src/index.js",
+            "methods": [
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+                "HEAD",
+                "OPTIONS"
+            ]
         }
     ],
     "env": {
