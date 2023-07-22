@@ -1,6 +1,6 @@
 import winston from "winston";
-import { NODE_ENV } from "../config.js";
 import path from "path";
+import { NODE_ENV } from "../config/config.js";
 
 const customLevelOptions = {
     levels: {

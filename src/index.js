@@ -1,6 +1,6 @@
 import express from "express";
 import __dirname from "./utils.js";
-import { MONGODB, PORT, SESSION_SECRET } from "./config.js";
+import { MONGODB, PORT, SESSION_SECRET } from "./config/config.js";
 import { connectToDatabase } from "./database/database.js";
 import cors from "cors";
 import bodyParser from 'body-parser';
@@ -15,7 +15,7 @@ import initializePassport from "./middlewares/passport.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 
-const app = express();
+export const app = express();
 
 app.use(cors());
 app.use(compression({ brotli: { enabled: true, zlib: { } } }))

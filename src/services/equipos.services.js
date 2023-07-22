@@ -140,14 +140,14 @@ class EquiposService {
             autogol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             estado: 'enCola',
             correo: equipo.correo.trim(),
-            categoria: 'primera',
+            categoria: 'Primera',
             instagram: equipo.instagram.trim(),
             jugadores: []
         }
         await this.enviarCorreo(newEquipo);
         equipos?.push(newEquipo)
-        await this.equipos.modeEquiposCreate(newEquipo);
-        return newEquipo;
+        const equipoCreao = await this.equipos.modeEquiposCreate(newEquipo);
+        return equipoCreao;
     }
 
     editarEquipo = async (id, changes) => {

@@ -1,4 +1,4 @@
-import { API_KEY, API_SECRET, CLOUD_NAME, EMAIL_PASSWORD, EMAIL_USERNAME, HOST_EMAIL, PORT_EMAIL } from "../config.js";
+import { API_KEY, API_SECRET, CLOUD_NAME, EMAIL_PASSWORD, EMAIL_USERNAME, HOST_EMAIL, PORT_EMAIL } from "../config/config.js";
 import { equiposModel } from "../models/equipos.model.js";
 import nodemailer from 'nodemailer';
 import { v2 as cloudinary } from 'cloudinary';

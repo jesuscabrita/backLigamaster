@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { MONGODB } from "../config.js";
+import { MONGODB } from "../config/config.js";
 
 export const connectToDatabase = async () => {
     console.log(`⚛️ Conectando a la base de datos...`);

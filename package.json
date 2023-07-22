@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "nodemon ./src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test:integration": "mocha ./src/test/*.test.js --timeout 10000",
+  "test": "mocha ./src/test/**/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -44,6 +45,9 @@
   },
   "devDependencies": {
     "artillery": "^2.0.0-34",
-    "nodemon": "^2.0.22"
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "nodemon": "^2.0.22",
+    "supertest": "^6.3.3"
   }
 }
