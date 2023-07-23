@@ -1,4 +1,6 @@
+import { EMAIL_PASSWORD, EMAIL_USERNAME, HOST_EMAIL, PORT_EMAIL } from "../config/config.js";
 import { userModel } from "../models/user.model.js";
+import nodemailer from 'nodemailer';
 
 class UserRepository {
     constructor() {}
@@ -18,6 +20,50 @@ class UserRepository {
     modelRegisterAndLogin = (email) => {
         return userModel.findOne({ email });
     }
+
+    createTransportCorreo = () => {
+        return nodemailer.createTransport({
+            host: HOST_EMAIL,
+            port: PORT_EMAIL,
+            auth: {
+                user: EMAIL_USERNAME,
+                pass: EMAIL_PASSWORD
+            },
+            tls: { rejectUnauthorized: false }
+        });
+    }
+
+    correoTextEnCola = (email,resetToken) => {
+        const resetLink = `http://localhost:3000/Reset/${resetToken}`;
+        return {
+            from: '"La liga 👻" <jesusarnaldo115@gmail.com>',
+            to: email,
+            subject: `¡Restablecimiento de contraseña!`,
+            html: `
+            <html>
+            <head>
+                <style>
+                        
+                </style>
+            </head>
+            <body>
+                <div style="background: white; z-index:9999;">
+                <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+                <a href="${resetLink}">${resetLink}</a>
+                </div>
+            </body>
+        </html>
+            `
+        };
+    }
+
+    enviarCorreo = (transporter, correo) => {
+        return transporter.sendMail(correo);
+    }
+
+    saveResetToken = async (userId, token) => {
+        await userModel.updateOne({ _id: userId }, { resetToken: token });
+    };
 
 }
 

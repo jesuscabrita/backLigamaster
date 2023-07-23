@@ -53,6 +53,15 @@ class UserService {
         return user;
     };
 
+    findByEmail = async (email) => {
+        const users = await this.getUsers();
+        const user = users.find((u) => u.email == email);
+        if (!user) {
+            throw new Error("No se pudo encontrar el correo seleccionado");
+        }
+        return user;
+    }
+
     validarEmail(correo) {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(correo);
@@ -213,6 +222,31 @@ class UserService {
             return { status: "error", error: 'No se pudo cerrar sesion' };
         }
     };
+
+    sendPasswordResetEmail = async (user, resetToken) => {
+        const transporter = this.user.createTransportCorreo();
+        const correo = this.user.correoTextEnCola(user, resetToken);
+        try {
+            const info = await this.user.enviarCorreo(transporter, correo);
+            console.log(`Correo electrónico enviado: ${info.messageId}`);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    solicitarContraseña = async (email) => {
+        try {
+            const user = await this.findByEmail(email);
+            const resetToken = this.generateToken(user.id, '4m');
+            await this.isValidResetToken(resetToken);
+            await this.user.saveResetToken(user._id, resetToken);
+            await this.sendPasswordResetEmail(email, resetToken);
+
+        } catch (error) {
+            console.error(error);
+            throw new Error('No se pudo encontrar el correo seleccionado');
+        }
+    }
 
 }
 

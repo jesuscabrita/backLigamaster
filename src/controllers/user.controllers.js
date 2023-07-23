@@ -60,3 +60,13 @@ export const logoutUser = async (req, res) => {
         return res.status(500).send({ status: "Error", message: err.message });
     }
 };
+
+export const solicitarContraseña = async (req, res) => {
+    try {
+        const { email } = req.body;
+        await userService.solicitarContraseña(email);
+        return res.status(200).send({ status: "success", message: "Solicitud de restablecimiento de contraseña enviada correctamente, recibira un email en unos segundos" });
+    } catch (err) {
+        return res.status(500).send({ status: "Error", message: err.message });
+    }
+};
