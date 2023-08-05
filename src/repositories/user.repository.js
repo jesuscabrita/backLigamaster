@@ -65,6 +65,10 @@ class UserRepository {
         await userModel.updateOne({ _id: userId }, { resetToken: token });
     };
 
+    modelUpdateUserPassword = (email, hashedPassword) => {
+        return userModel.updateOne({ email: email }, { password: hashedPassword });
+    };
+
 }
 
 export const userRepository = new UserRepository();

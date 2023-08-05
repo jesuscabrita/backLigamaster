@@ -70,3 +70,18 @@ export const solicitarContraseña = async (req, res) => {
         return res.status(500).send({ status: "Error", message: err.message });
     }
 };
+
+export const cambioContraseña = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const userbody = req.body
+        const result = await userService.restablecerContraseña(email, password, userbody);
+        if (result.status === "success") {
+            return res.status(200).send({ status: "success", message: result.message });
+        } else {
+            return res.status(400).send({ status: "error", error: result.error });
+        }
+    } catch (error) {
+        return res.status(500).send({ status: "error", error: error.message });
+    }
+};

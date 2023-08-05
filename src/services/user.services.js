@@ -241,12 +241,42 @@ class UserService {
             await this.isValidResetToken(resetToken);
             await this.user.saveResetToken(user._id, resetToken);
             await this.sendPasswordResetEmail(email, resetToken);
-
         } catch (error) {
             console.error(error);
             throw new Error('No se pudo encontrar el correo seleccionado');
         }
     }
+
+    restablecerContraseña = async (email, newPassword, userbody) => {
+        try {
+            const user = await this.findByEmail(email);
+            if (!user) {
+                throw new Error("No se encuentra ese usuario");
+            }
+            const isSamePassword = isValidPassword(user, newPassword);
+            if (isSamePassword) {
+                throw new Error("No puedes usar la misma contraseña anterior.");
+            }
+            if (newPassword !== userbody.repeated_password) {
+                throw new Error("La contraseña repetida no coincide con la nueva contraseña");
+            }
+            if (newPassword.length < 8) {
+                throw new Error("La contraseña debe tener al menos 8 caracteres");
+            }
+            if (this.isSequentialNumeric(newPassword)) {
+                throw new Error("La contraseña no puede contener números secuenciales");
+            }
+            if (this.containsWhitespace(newPassword)) {
+                throw new Error("La contraseña no puede contener espacios en blanco");
+            }
+            const hashedPassword = createHash(newPassword);
+            await this.user.modelUpdateUserPassword(email, hashedPassword);
+            return { status: "success", message: "Contraseña restablecida correctamente." };
+        } catch (error) {
+            console.error(error);
+            return { status: "error", error: error.message };
+        }
+    };
 
 }
 
