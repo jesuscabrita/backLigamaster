@@ -34,7 +34,7 @@ class UserRepository {
     }
 
     correoTextEnCola = (email,resetToken) => {
-        const resetLink = `http://localhost:3000/Reset/${resetToken}`;
+        const resetLink = `https://front-deportes.vercel.app/reset/${resetToken}`;
         return {
             from: '"La liga 👻" <jesusarnaldo115@gmail.com>',
             to: email,

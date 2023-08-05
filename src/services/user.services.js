@@ -237,7 +237,7 @@ class UserService {
     solicitarContraseña = async (email) => {
         try {
             const user = await this.findByEmail(email);
-            const resetToken = this.generateToken(user.id, '4m');
+            const resetToken = this.generateToken(user.id, '15m');
             await this.isValidResetToken(resetToken);
             await this.user.saveResetToken(user._id, resetToken);
             await this.sendPasswordResetEmail(email, resetToken);

@@ -77,11 +77,11 @@ export const cambioContraseña = async (req, res) => {
         const userbody = req.body
         const result = await userService.restablecerContraseña(email, password, userbody);
         if (result.status === "success") {
-            return res.status(200).send({ status: "success", message: result.message });
+            return res.status(200).send({ status: "success", message: 'Contraseña restablecida correctamente.' });
         } else {
-            return res.status(400).send({ status: "error", error: result.error });
+            return res.status(400).send({ status: "Error", message: result.error });
         }
-    } catch (error) {
-        return res.status(500).send({ status: "error", error: error.message });
+    } catch (err) {
+        return res.status(500).send({ status: "Error", message: err.message });
     }
 };
