@@ -2,35 +2,45 @@ import moment from "moment";
 import { createHash, isValidPassword } from "../middlewares/hash.js";
 import { userRepository } from "../repositories/user.repository.js";
 import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../config/config.js";
 
 class UserService {
     constructor() {
         this.user = userRepository;
+        this.usedTokens = [];
     }
 
     generateToken = (userId, expiresIn) => {
-        const token = jwt.sign({ userId }, 'secret', { expiresIn });
+        const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn });
         return token;
     };
 
     isValidResetToken = async (token) => {
         try {
-            const decodedToken = jwt.verify(token, 'secret');
-
+            const decodedToken = jwt.verify(token, JWT_SECRET);
             const currentTimestamp = Math.floor(Date.now() / 1000);
             const isTokenExpired = decodedToken.exp < currentTimestamp;
-
+            
             if (isTokenExpired) {
                 return false;
             }
-
+            
+            const tokenHasBeenUsed = this.usedTokens.includes(token);
+            
+            if (tokenHasBeenUsed) {
+                return false;
+            }
+    
             const validTokens = [decodedToken.userId];
             const isTokenValid = validTokens.includes(decodedToken.userId);
-
             return isTokenValid;
         } catch (error) {
             return false;
         }
+    };
+
+    markTokenAsUsed = (token) => {
+        this.usedTokens.push(token);
     };
 
     getUsers = async (limit) => {
@@ -180,7 +190,6 @@ class UserService {
         if (!user) {
             return { status: "error", error: `El email ${email} no es correcto` };
         }
-    
         const validPassword = isValidPassword(user, password);
         if (!validPassword) {
             return { status: "error", error: 'la contraseña es incorrecta' };
@@ -192,6 +201,8 @@ class UserService {
             });
             console.log('token', token);
             res.cookie("tokenCookie", token, { httpOnly: true });
+            user.last_connection = new Date();
+            await user.save();
 
             req.session.user = {
                 nombre: user.nombre,
@@ -201,7 +212,8 @@ class UserService {
                 fecha_de_nacimiento: user.fecha_de_nacimiento,
                 role: user.role,
                 equipo:  user.equipo,
-                tipo: user.tipo
+                tipo: user.tipo,
+                last_connection: user.last_connection
             };
 
             return {
@@ -238,7 +250,10 @@ class UserService {
         try {
             const user = await this.findByEmail(email);
             const resetToken = this.generateToken(user.id, '15m');
-            await this.isValidResetToken(resetToken);
+            const isTokenValid = await this.isValidResetToken(resetToken);
+            if (!isTokenValid) {
+                throw new Error('Token inválido o expirado');
+            }
             await this.user.saveResetToken(user._id, resetToken);
             await this.sendPasswordResetEmail(email, resetToken);
         } catch (error) {

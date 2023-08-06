@@ -22,3 +22,4 @@ export const PORT_EMAIL = checkEnv("PORT_EMAIL");
 export const HOST_EMAIL = checkEnv("HOST_EMAIL");
 
 export const SESSION_SECRET = checkEnv("SESSION_SECRET");
+export const JWT_SECRET = checkEnv("JWT_SECRET");

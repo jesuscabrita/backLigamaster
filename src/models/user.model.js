@@ -14,6 +14,7 @@ const userSchema = new Schema(
         equipo: { type: String },
         foto: { type: String },
         tipo: { type : String },
+        last_connection: { type: Date },
     },
     { timestamps: true }
 );

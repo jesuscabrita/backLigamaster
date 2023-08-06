@@ -85,3 +85,5 @@ export const cambioContraseña = async (req, res) => {
         return res.status(500).send({ status: "Error", message: err.message });
     }
 };
+
+
