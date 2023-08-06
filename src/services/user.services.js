@@ -20,17 +20,13 @@ class UserService {
             const decodedToken = jwt.verify(token, JWT_SECRET);
             const currentTimestamp = Math.floor(Date.now() / 1000);
             const isTokenExpired = decodedToken.exp < currentTimestamp;
-            
             if (isTokenExpired) {
                 return false;
             }
-            
             const tokenHasBeenUsed = this.usedTokens.includes(token);
-            
             if (tokenHasBeenUsed) {
                 return false;
             }
-    
             const validTokens = [decodedToken.userId];
             const isTokenValid = validTokens.includes(decodedToken.userId);
             return isTokenValid;
