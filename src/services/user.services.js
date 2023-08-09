@@ -308,6 +308,20 @@ class UserService {
         }
     }
 
+    deleteUser = async (userId) => {
+        try {
+            const usuarios = await this.getUsers();
+            const usuarioIndex = usuarios.findIndex((user) => user._id == userId);
+            if (usuarioIndex === -1) {
+                throw new Error(`No se encontró el usuario con ID ${userId}`);
+            }
+            usuarios.splice(usuarioIndex, 1);
+            await this.user.modelUserDelete(userId);
+        } catch (error) {
+            throw new Error('No se pudo eliminar el usuario');
+        }
+    };
+
 }
 
 export const userService = new UserService();

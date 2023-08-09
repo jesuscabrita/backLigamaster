@@ -97,4 +97,15 @@ export const editUsuario = async (req, res) => {
     }
 };
 
+export const eliminarUser = async (req, res) => {
+    const userId = req.params.userId;
+    try {
+        await userService.deleteUser(userId);
+        return res.status(200).send({ status: "success", message: "Se elimino el usuario correctamente" });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).send({ status: "Error", error: error.message });
+    }
+}
+
 

@@ -73,6 +73,10 @@ class UserRepository {
         return userModel.updateOne({ _id: userId }, { $set: updatedUser });
     };
 
+    modelUserDelete = (userId) => {
+        return userModel.findByIdAndDelete(userId);
+    };
+
 }
 
 export const userRepository = new UserRepository();
