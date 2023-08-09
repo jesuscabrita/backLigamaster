@@ -1,5 +1,5 @@
 import express from "express";
-import { cambioContraseña, getUser, getUserById, loginUser, logoutUser, registerUser, solicitarContraseña } from "../controllers/user.controllers.js";
+import { cambioContraseña, editUsuario, getUser, getUserById, loginUser, logoutUser, registerUser, solicitarContraseña } from "../controllers/user.controllers.js";
 
 const router = express.Router();
 
@@ -10,5 +10,6 @@ router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 router.post("/solicitar", solicitarContraseña);
 router.post("/cambiar", cambioContraseña);
+router.put("/:userId",editUsuario );
 
 export default router;

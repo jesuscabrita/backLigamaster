@@ -86,4 +86,15 @@ export const cambioContraseña = async (req, res) => {
     }
 };
 
+export const editUsuario = async (req, res) => {
+    const userId = req.params.userId;
+    const changes = req.body;
+    try {
+        const update = await userService.editarUsuario(userId, changes);
+        return res.status(200).send({ status: "success", message: "Se edito el usuario correctamente", update });
+    } catch (error) {
+        return res.status(404).send({ status: 'Error', error: error.message });
+    }
+};
+
 

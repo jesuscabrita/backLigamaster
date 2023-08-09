@@ -69,6 +69,10 @@ class UserRepository {
         return userModel.updateOne({ email: email }, { password: hashedPassword });
     };
 
+    modelUserEdit = (userId, updatedUser) => {
+        return userModel.updateOne({ _id: userId }, { $set: updatedUser });
+    };
+
 }
 
 export const userRepository = new UserRepository();
