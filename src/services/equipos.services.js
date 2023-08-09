@@ -129,6 +129,7 @@ class EquiposService {
             puntaje_anterior: 0,
             foto_equipo: "",
             banco_fondo: 10000000,
+            fair_play:"Aprobado",
             tarjetasAmarillas: 0,
             tarjetasRojas: 0,
             director_tecnico: [],

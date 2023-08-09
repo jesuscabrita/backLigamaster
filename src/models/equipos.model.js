@@ -34,7 +34,12 @@ const jugadorSchema = new Schema(
         twitter: { type: String },
         equipo: { type: String },
         logo: { type: String },
-        foto: { type: String }
+        foto: { type: String },
+        sueldo: { type: Number },
+        contrato: { type: Number },
+        valor_mercado: { type: Number },
+        fecha_inicio: { type: Date },
+        fecha_fichaje: { type: String },
     },
     { timestamps: true }
 );
@@ -96,6 +101,7 @@ const equiposSchema = new Schema(
         puntaje_anterior: { type: Number },
         foto_equipo: { type: String },
         banco_fondo: { type: Number },
+        fair_play:{ type: String },
         tarjetasAmarillas: { type: Number },
         tarjetasRojas: { type: Number },
         director_tecnico: [directorTecnicoSchema],

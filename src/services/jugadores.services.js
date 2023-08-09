@@ -1,3 +1,4 @@
+import moment from "moment";
 import { equiposRepository } from "../repositories/equipos.repository.js";
 import { jugadoresRepository } from "../repositories/jugadores.repository.js";
 
@@ -7,13 +8,16 @@ class JugadoresService {
         this.equipoCloudinary = equiposRepository;
     }
 
-    validateJugadorData(name, edad, posicion, fecha_nacimiento, nacionalidad, dorsal, instagram) {
+    validateJugadorData(name, sueldo, posicion, fecha_nacimiento, nacionalidad, dorsal, instagram) {
         if (!name) {
             throw new Error("El nombre del jugador es requerido");
         }
-        if (!edad) {
-            throw new Error("La edad del jugador es requerido");
+        if (!sueldo) {
+            throw new Error("El sueldo del jugador es requerido");
         }
+        // if (!contrato) {
+        //     throw new Error("El contrato del jugador es requerido");
+        // }
         if (!posicion) {
             throw new Error("La posicion del jugador es requerido");
         }
@@ -55,10 +59,17 @@ class JugadoresService {
         }
     }
 
+    calculateAge = (fecha_nacimiento) => {
+        const today = moment();
+        const birthDate = moment(fecha_nacimiento, 'YYYY-MM-DD');
+        const age = today.diff(birthDate, 'years');
+        return age.toString();
+    }
+
     crearJugador = async (equipoId, jugador) => {
         this.validateJugadorData(
             jugador.name,
-            jugador.edad,
+            jugador.sueldo,
             jugador.posicion,
             jugador.fecha_nacimiento,
             jugador.nacionalidad,
@@ -69,12 +80,31 @@ class JugadoresService {
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
         }
-        if (equipo.jugadores.length >= 4) {
-            throw new Error("Ya se han creado 4 jugadores en este equipo es el límite");
+        if (equipo.jugadores.length >= 10) {
+            throw new Error("Ya se han fichado 10 jugadores en este equipo es el límite");
         }
         const dorsalExistente = equipo.jugadores.find(j => j.dorsal == jugador.dorsal);
         if (dorsalExistente) {
             throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
+        }
+        if (jugador.contrato === 'Seleccionar') {
+            throw new Error("El contrato del jugador es requerido");
+        }
+
+        let sueldoNuevoJugador = jugador.sueldo;
+        if (jugador.contrato === 0.5) {
+            sueldoNuevoJugador = Math.round(sueldoNuevoJugador / 2);
+        } else if (jugador.contrato > 1) {
+            sueldoNuevoJugador = Math.round(sueldoNuevoJugador * jugador.contrato);
+        }
+
+        const sueldoTotalJugadores = equipo.jugadores.reduce((totalSueldo, j) => totalSueldo + j.sueldo, 0);
+        const saldoDisponible = equipo.banco_fondo - sueldoTotalJugadores - sueldoNuevoJugador;
+        if (sueldoNuevoJugador < 500000) {
+            throw new Error("El sueldo del jugador debe ser de al menos 500,000");
+        }
+        if (saldoDisponible < 0) {
+            throw new Error("El sueldo del nuevo jugador excede el límite del banco del equipo, no cumples con el Fair play Financiero");
         }
 
         try {
@@ -99,7 +129,7 @@ class JugadoresService {
 
             const nuevoJugador = {
                 name: nombreCapitalizado.join(' '),
-                edad: jugador.edad,
+                edad: this.calculateAge(jugador.fecha_nacimiento),
                 capitan: 'No',
                 posicion: jugador.posicion.trim(),
                 fecha_nacimiento: jugador.fecha_nacimiento,
@@ -128,7 +158,12 @@ class JugadoresService {
                 twitter: 'No definido',
                 equipo: equipo.name,
                 logo: equipo.logo,
-                foto: newFotoUrl
+                foto: newFotoUrl,
+                sueldo: jugador.sueldo,
+                contrato: jugador.contrato,
+                valor_mercado: 1000000,
+                fecha_inicio: new Date(),
+                fecha_fichaje:'No definido'
             }
             equipo.jugadores.push(nuevoJugador);
             await equipo.save();
@@ -179,11 +214,30 @@ class JugadoresService {
         if (dorsalExistente) {
             throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
         }
+        if (jugador.contrato === 'Seleccionar') {
+            throw new Error("El contrato del jugador es requerido");
+        }
+
+        let sueldoNuevoJugador = jugador.sueldo;
+        if (jugador.contrato === 0.5) {
+            sueldoNuevoJugador = Math.round(sueldoNuevoJugador / 2);
+        } else if (jugador.contrato > 1) {
+            sueldoNuevoJugador = Math.round(sueldoNuevoJugador * jugador.contrato);
+        }
+
+        const sueldoTotalJugadores = equipo.jugadores.reduce((totalSueldo, j) => totalSueldo + j.sueldo, 0);
+        const saldoDisponible = equipo.banco_fondo - sueldoTotalJugadores - sueldoNuevoJugador;
+
+        if (sueldoNuevoJugador < 500000) {
+            throw new Error("El sueldo del jugador debe ser de al menos 500,000");
+        }
+        if (saldoDisponible < 0) {
+            throw new Error("El sueldo del nuevo jugador excede el límite del banco del equipo, no cumples con el Fair play Financiero");
+        }
 
         try {
             const jugadorActual = equipo.jugadores[jugadorIndex];
             let fotoChanged = false;
-
             if (jugador.foto && jugador.foto !== jugadorActual.foto) {
                 fotoChanged = true;
             }
@@ -216,7 +270,7 @@ class JugadoresService {
             const updatedJugador = {
                 ...equipo.jugadores[jugadorIndex],
                 name: jugador.name.trim(),
-                edad: jugador.edad,
+                edad: this.calculateAge(jugador.fecha_nacimiento),
                 capitan: equipo.jugadores[jugadorIndex].capitan,
                 posicion: jugador.posicion.trim(),
                 fecha_nacimiento: jugador.fecha_nacimiento,
@@ -246,6 +300,11 @@ class JugadoresService {
                 equipo: equipo.jugadores[jugadorIndex].equipo,
                 logo: equipo.jugadores[jugadorIndex].logo,
                 foto: newFotoUrl || jugador.foto,
+                sueldo: jugador.sueldo,
+                contrato: jugador.contrato,
+                valor_mercado: equipo.jugadores[jugadorIndex].valor_mercado,
+                fecha_inicio: equipo.jugadores[jugadorIndex].fecha_inicio,
+                fecha_fichaje: equipo.jugadores[jugadorIndex].fecha_fichaje,
                 _id: equipo.jugadores[jugadorIndex]._id,
                 createdAt: equipo.jugadores[jugadorIndex].createdAt,
                 updatedAt: equipo.jugadores[jugadorIndex].updatedAt

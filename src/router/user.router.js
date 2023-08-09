@@ -10,7 +10,7 @@ router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 router.post("/solicitar", solicitarContraseña);
 router.post("/cambiar", cambioContraseña);
-router.put("/:userId",editUsuario );
+router.put("/:userId", editUsuario );
 router.delete("/:userId", eliminarUser);
 
 export default router;

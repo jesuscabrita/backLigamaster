@@ -56,7 +56,8 @@ class UserService {
         if (!user) {
             throw new Error("No se pudo encontrar el usuario seleccionado");
         }
-        return user;
+        const { _id, nombre, apellido, email, role, fecha_de_nacimiento, edad, equipo, foto, tipo, createdAt, last_connectio } = user;
+            return { _id, nombre, apellido, email, role, fecha_de_nacimiento, edad, equipo, foto, tipo, createdAt, last_connectio};
     };
 
     findByEmail = async (email) => {
@@ -201,6 +202,7 @@ class UserService {
             await user.save();
 
             req.session.user = {
+                _id: user._id,
                 nombre: user.nombre,
                 apellido: user.apellido,
                 email: user.email,
