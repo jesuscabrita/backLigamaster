@@ -5,7 +5,7 @@ export const addJugador = async (req, res) => {
         const equipoId = req.params.equipoId;
         const jugador = req.body;
         const equipo = await jugadoresService.crearJugador(equipoId, jugador);
-        return res.status(201).send({ status: 'Succes', message: 'Se creó el jugador correctamente', jugadores: equipo });
+        return res.status(201).send({ status: 'Succes', message: 'Se ficho el jugador correctamente', jugadores: equipo });
     } catch (err) {
         return res.status(400).send({ status: "Error", message: err.message });
     }

@@ -15,9 +15,6 @@ class JugadoresService {
         if (!sueldo) {
             throw new Error("El sueldo del jugador es requerido");
         }
-        // if (!contrato) {
-        //     throw new Error("El contrato del jugador es requerido");
-        // }
         if (!posicion) {
             throw new Error("La posicion del jugador es requerido");
         }
@@ -90,21 +87,23 @@ class JugadoresService {
         if (jugador.contrato === 'Seleccionar') {
             throw new Error("El contrato del jugador es requerido");
         }
-
-        let sueldoNuevoJugador = jugador.sueldo;
-        if (jugador.contrato === 0.5) {
-            sueldoNuevoJugador = Math.round(sueldoNuevoJugador / 2);
-        } else if (jugador.contrato > 1) {
-            sueldoNuevoJugador = Math.round(sueldoNuevoJugador * jugador.contrato);
-        }
-
-        const sueldoTotalJugadores = equipo.jugadores.reduce((totalSueldo, j) => totalSueldo + j.sueldo, 0);
-        const saldoDisponible = equipo.banco_fondo - sueldoTotalJugadores - sueldoNuevoJugador;
-        if (sueldoNuevoJugador < 500000) {
+        if (jugador.sueldo < 500000) {
             throw new Error("El sueldo del jugador debe ser de al menos 500,000");
         }
-        if (saldoDisponible < 0) {
-            throw new Error("El sueldo del nuevo jugador excede el límite del banco del equipo, no cumples con el Fair play Financiero");
+        if (jugador.contrato === 0.5) {
+            jugador.sueldo = jugador.sueldo / 2;
+        } else if (jugador.contrato === 1) {
+            jugador.sueldo = jugador.sueldo;
+        }else if (jugador.contrato === 2) {
+            jugador.sueldo = jugador.sueldo * 2;
+        }else if (jugador.contrato === 3) {
+            jugador.sueldo = jugador.sueldo * 3;
+        }else if (jugador.contrato === 4) {
+            jugador.sueldo = jugador.sueldo * 4;
+        }
+        const sueldoTotalJugadores = equipo.jugadores.reduce((totalSueldo, j) => totalSueldo + parseFloat(j.sueldo), 0) + parseFloat(jugador.sueldo);
+        if (sueldoTotalJugadores > equipo.banco_fondo) {
+            throw new Error("Excediste el límite salarial, no cumples con el Fair play financiero");
         }
 
         try {
@@ -127,9 +126,42 @@ class JugadoresService {
             const nombreCompleto = jugador.name.trim().split(' ');
             const nombreCapitalizado = nombreCompleto.map((nombre) => capitalizeFirstLetter(nombre));
 
+            let clausulaAumento = 0;
+            const edadJugador = this.calculateAge(jugador.fecha_nacimiento);
+            const valorMercado = edadJugador > 40 ? 500000 :1000000;
+            
+            if (edadJugador < 18) {
+                clausulaAumento = 0.65;
+            } else if (edadJugador < 20) {
+                clausulaAumento = 0.75;
+            } else if (edadJugador < 22) {
+                clausulaAumento = 0.85;
+            } else if (edadJugador < 24) {
+                clausulaAumento = 1;
+            } else if (edadJugador < 26) {
+                clausulaAumento = 1.2;
+            } else if (edadJugador < 28) {
+                clausulaAumento = 0.8;
+            } else if (edadJugador < 30) {
+                clausulaAumento = 0.7;
+            } else if (edadJugador < 32) {
+                clausulaAumento = 0.6;
+            } else if (edadJugador < 34) {
+                clausulaAumento = 0.5;
+            } else if (edadJugador < 36) {
+                clausulaAumento = 0.4;
+            } else if (edadJugador < 38) {
+                clausulaAumento = 0.2;
+            } else if (edadJugador < 40) {
+                clausulaAumento = 0;
+            } else {
+                clausulaAumento = 1;
+            }
+            const nuevaClausula = edadJugador > 40 ? 500000 : valorMercado * (1 + clausulaAumento)
+
             const nuevoJugador = {
                 name: nombreCapitalizado.join(' '),
-                edad: this.calculateAge(jugador.fecha_nacimiento),
+                edad: edadJugador,
                 capitan: 'No',
                 posicion: jugador.posicion.trim(),
                 fecha_nacimiento: jugador.fecha_nacimiento,
@@ -161,13 +193,14 @@ class JugadoresService {
                 foto: newFotoUrl,
                 sueldo: jugador.sueldo,
                 contrato: jugador.contrato,
-                valor_mercado: 1000000,
+                valor_mercado: valorMercado,
                 fecha_inicio: new Date(),
-                fecha_fichaje:'No definido'
+                fecha_fichaje:'No definido',
+                clausula: nuevaClausula
             }
-            equipo.jugadores.push(nuevoJugador);
+            const jugadorNuevo = equipo.jugadores.push(nuevoJugador);
             await equipo.save();
-            return equipo;
+            return jugadorNuevo;
         } catch (error) {
             console.error(error);
             throw new Error("Error al agregar jugador al equipo");
@@ -217,22 +250,33 @@ class JugadoresService {
         if (jugador.contrato === 'Seleccionar') {
             throw new Error("El contrato del jugador es requerido");
         }
-
-        let sueldoNuevoJugador = jugador.sueldo;
-        if (jugador.contrato === 0.5) {
-            sueldoNuevoJugador = Math.round(sueldoNuevoJugador / 2);
-        } else if (jugador.contrato > 1) {
-            sueldoNuevoJugador = Math.round(sueldoNuevoJugador * jugador.contrato);
-        }
-
-        const sueldoTotalJugadores = equipo.jugadores.reduce((totalSueldo, j) => totalSueldo + j.sueldo, 0);
-        const saldoDisponible = equipo.banco_fondo - sueldoTotalJugadores - sueldoNuevoJugador;
-
-        if (sueldoNuevoJugador < 500000) {
+        if (jugador.sueldo < 500000) {
             throw new Error("El sueldo del jugador debe ser de al menos 500,000");
         }
-        if (saldoDisponible < 0) {
-            throw new Error("El sueldo del nuevo jugador excede el límite del banco del equipo, no cumples con el Fair play Financiero");
+        if (jugador.contrato === 0.5) {
+            jugador.sueldo = jugador.sueldo / 2;
+        } else if (jugador.contrato === 1) {
+            jugador.sueldo = jugador.sueldo;
+        }else if (jugador.contrato === 2) {
+            jugador.sueldo = jugador.sueldo * 2;
+        }else if (jugador.contrato === 3) {
+            jugador.sueldo = jugador.sueldo * 3;
+        }else if (jugador.contrato === 4) {
+            jugador.sueldo = jugador.sueldo * 4;
+        }
+
+        const jugadorActual = equipo.jugadores[jugadorIndex];
+        let sueldoTotalJugadores = 0;
+        for (const j of equipo.jugadores) {
+            if (j._id !== jugadorId) {
+                sueldoTotalJugadores += parseFloat(j.sueldo);
+            }
+        }
+        if (equipo.jugadores[jugadorIndex].sueldo !== jugador.sueldo) {
+            sueldoTotalJugadores += parseFloat(jugador.sueldo) - parseFloat(jugadorActual.sueldo);
+        }
+        if (sueldoTotalJugadores > equipo.banco_fondo) {
+            throw new Error("Excediste el límite salarial, no cumples con el Fair play financiero");
         }
 
         try {
@@ -305,6 +349,7 @@ class JugadoresService {
                 valor_mercado: equipo.jugadores[jugadorIndex].valor_mercado,
                 fecha_inicio: equipo.jugadores[jugadorIndex].fecha_inicio,
                 fecha_fichaje: equipo.jugadores[jugadorIndex].fecha_fichaje,
+                clausula: equipo.jugadores[jugadorIndex].clausula,
                 _id: equipo.jugadores[jugadorIndex]._id,
                 createdAt: equipo.jugadores[jugadorIndex].createdAt,
                 updatedAt: equipo.jugadores[jugadorIndex].updatedAt

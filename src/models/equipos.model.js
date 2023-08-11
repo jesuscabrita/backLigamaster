@@ -40,6 +40,7 @@ const jugadorSchema = new Schema(
         valor_mercado: { type: Number },
         fecha_inicio: { type: Date },
         fecha_fichaje: { type: String },
+        clausula: { type: Number }
     },
     { timestamps: true }
 );
