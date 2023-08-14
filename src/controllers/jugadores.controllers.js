@@ -192,3 +192,15 @@ export const editCapitanJugador = async (req, res) => {
         return res.status(404).send({ status: "Error", message: error.message });
     }
 };
+
+export const valorMercaoJugador = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    const jugador = req.body;
+    try {
+        const updatedJugador = await jugadoresService.valorMercadoJugador(equipoId,jugadorId,jugador);
+        return res.status(200).send({ status: "OK", message: `El jugador se editó correctamente`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};

@@ -36,11 +36,13 @@ const jugadorSchema = new Schema(
         logo: { type: String },
         foto: { type: String },
         sueldo: { type: Number },
+        sueldoCalculo: { type: Number },
         contrato: { type: Number },
         valor_mercado: { type: Number },
         fecha_inicio: { type: Date },
         fecha_fichaje: { type: String },
-        clausula: { type: Number }
+        clausula: { type: Number },
+        indemnizacion: { type: Number }
     },
     { timestamps: true }
 );

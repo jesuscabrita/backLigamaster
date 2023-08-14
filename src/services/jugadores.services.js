@@ -192,11 +192,13 @@ class JugadoresService {
                 logo: equipo.logo,
                 foto: newFotoUrl,
                 sueldo: jugador.sueldo,
+                sueldoCalculo:jugador.sueldo,
                 contrato: jugador.contrato,
                 valor_mercado: valorMercado,
                 fecha_inicio: new Date(),
                 fecha_fichaje:'No definido',
-                clausula: nuevaClausula
+                clausula: nuevaClausula,
+                indemnizacion:jugador.sueldo / 2,
             }
             const jugadorNuevo = equipo.jugadores.push(nuevoJugador);
             await equipo.save();
@@ -345,11 +347,13 @@ class JugadoresService {
                 logo: equipo.jugadores[jugadorIndex].logo,
                 foto: newFotoUrl || jugador.foto,
                 sueldo: jugador.sueldo,
+                sueldoCalculo: jugador.sueldo,
                 contrato: jugador.contrato,
                 valor_mercado: equipo.jugadores[jugadorIndex].valor_mercado,
                 fecha_inicio: equipo.jugadores[jugadorIndex].fecha_inicio,
                 fecha_fichaje: equipo.jugadores[jugadorIndex].fecha_fichaje,
                 clausula: equipo.jugadores[jugadorIndex].clausula,
+                indemnizacion: jugador.sueldo / 2,
                 _id: equipo.jugadores[jugadorIndex]._id,
                 createdAt: equipo.jugadores[jugadorIndex].createdAt,
                 updatedAt: equipo.jugadores[jugadorIndex].updatedAt
@@ -777,6 +781,40 @@ class JugadoresService {
                 capitan: jugador.capitan,
             };
             equipo.jugadores[jugadorIndex].capitan = updatedJugador.capitan;
+            if (jugador.foto) {
+                equipo.jugadores[jugadorIndex].foto = newFotoUrl;
+            }
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar jugador del equipo");
+        }
+    };
+
+    valorMercadoJugador = async (equipoId, jugadorId, jugador) => {
+        const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+        if (jugadorIndex === -1) {
+            throw new Error("El jugador no existe en el equipo");
+        }
+        try {
+            let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
+            if (jugador.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto);
+                newFotoUrl = result.secure_url;
+            }
+            const updatedJugador = {
+                valor_mercado: jugador.valor_mercado,
+                sueldoCalculo: jugador.sueldoCalculo,
+                clausula: jugador.clausula,
+            };
+            equipo.jugadores[jugadorIndex].valor_mercado = updatedJugador.valor_mercado;
+            equipo.jugadores[jugadorIndex].sueldoCalculo = updatedJugador.sueldoCalculo;
+            equipo.jugadores[jugadorIndex].clausula = updatedJugador.clausula;
             if (jugador.foto) {
                 equipo.jugadores[jugadorIndex].foto = newFotoUrl;
             }
