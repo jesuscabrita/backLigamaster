@@ -2,6 +2,14 @@ import { model, Schema } from "mongoose";
 
 const equiposCollection = "equipos";
 
+const ofertaSchema = new Schema ({
+    equipo: { type: String },
+    logo: { type: String },
+    precio: { type: Number },
+    contrato: { type: Number },
+    tipo: { type: String }
+})
+
 const jugadorSchema = new Schema(
     {
         name: { type: String },
@@ -42,7 +50,8 @@ const jugadorSchema = new Schema(
         fecha_inicio: { type: Date },
         fecha_fichaje: { type: String },
         clausula: { type: Number },
-        indemnizacion: { type: Number }
+        indemnizacion: { type: Number },
+        oferta: { type: [ofertaSchema]}
     },
     { timestamps: true }
 );

@@ -199,6 +199,7 @@ class JugadoresService {
                 fecha_fichaje:'No definido',
                 clausula: nuevaClausula,
                 indemnizacion:jugador.sueldo / 2,
+                oferta: [],
             }
             const jugadorNuevo = equipo.jugadores.push(nuevoJugador);
             await equipo.save();
@@ -354,6 +355,7 @@ class JugadoresService {
                 fecha_fichaje: equipo.jugadores[jugadorIndex].fecha_fichaje,
                 clausula: equipo.jugadores[jugadorIndex].clausula,
                 indemnizacion: jugador.sueldo / 2,
+                oferta: equipo.jugadores[jugadorIndex].oferta,
                 _id: equipo.jugadores[jugadorIndex]._id,
                 createdAt: equipo.jugadores[jugadorIndex].createdAt,
                 updatedAt: equipo.jugadores[jugadorIndex].updatedAt
