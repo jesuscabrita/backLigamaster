@@ -204,6 +204,7 @@ class JugadoresService {
                 indemnizacion:jugador.sueldo / 2,
                 oferta: [],
                 transferible:'No',
+                libre:'No',
             }
             const jugadorNuevo = equipo.jugadores.push(nuevoJugador);
             await equipo.save();
@@ -364,6 +365,7 @@ class JugadoresService {
                 indemnizacion: jugador.sueldo / 2,
                 oferta: equipo.jugadores[jugadorIndex].oferta,
                 transferible: equipo.jugadores[jugadorIndex].transferible,
+                libre: equipo.jugadores[jugadorIndex].libre,
                 _id: equipo.jugadores[jugadorIndex]._id,
                 createdAt: equipo.jugadores[jugadorIndex].createdAt,
                 updatedAt: equipo.jugadores[jugadorIndex].updatedAt
@@ -931,6 +933,82 @@ class JugadoresService {
             throw new Error("Error al editar jugador del equipo");
         }
     }; 
+
+    recindirJugador = async (equipoId, jugadorId, jugador) => {
+        const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+        if (jugadorIndex === -1) {
+            throw new Error("El jugador no existe en el equipo");
+        }
+        const sueldoAnterior = equipo.jugadores[jugadorIndex].sueldo;
+        const indemnizacion = equipo.jugadores[jugadorIndex].indemnizacion;
+        equipo.banco_fondo -= (sueldoAnterior + indemnizacion);
+        try {
+            let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
+            if (jugador.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto);
+                newFotoUrl = result.secure_url;
+            }
+            const updatedJugador = {
+                libre: jugador.libre,
+            };
+            equipo.jugadores[jugadorIndex].libre = updatedJugador.libre;
+            if (jugador.foto) {
+                equipo.jugadores[jugadorIndex].foto = newFotoUrl;
+            }
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar jugador del equipo");
+        }
+    }; 
+
+    crearOferta = async (equipoId, jugadorId, oferta) => {
+        const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+        if (jugadorIndex === -1) {
+            throw new Error("El jugador no existe en el equipo");
+        }
+        if (!oferta.sueldo) {
+            throw new Error("El sueldo del jugador es requerido");
+        }
+        if (!oferta.precio) {
+            throw new Error("La oferta del jugador es requerida");
+        }
+        if (oferta.contrato === 'Seleccionar') {
+            throw new Error("El contrato del jugador es requerido");
+        }
+        if (oferta.sueldo < equipo.jugadores[jugadorIndex].sueldoCalculo) {
+            throw new Error(`El sueldo del jugador debe ser mayor o igual a ${equipo.jugadores[jugadorIndex].sueldoCalculo}`);
+        }
+        if (oferta.precio < equipo.jugadores[jugadorIndex].valor_mercado) {
+            throw new Error(`El precio del jugador debe ser mayor o igual a ${equipo.jugadores[jugadorIndex].valor_mercado} que es su valor en el mercado`);
+        }
+        try{
+            const nuevaOferta = {
+                equipo: oferta.equipo,
+                logo: oferta.logo,
+                precio: oferta.precio,
+                contrato: oferta.contrato,
+                tipo: oferta.tipo,
+                fecha_oferta: new Date(),
+                sueldo: oferta.sueldo,
+            }
+            const ofertaNueva = equipo.jugadores[jugadorIndex].oferta.push(nuevaOferta);
+            await equipo.save();
+            return ofertaNueva;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Error al crear una oferta");
+        }
+    }
 }
 
 export const jugadoresService = new JugadoresService();

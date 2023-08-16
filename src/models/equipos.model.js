@@ -7,7 +7,9 @@ const ofertaSchema = new Schema ({
     logo: { type: String },
     precio: { type: Number },
     contrato: { type: Number },
-    tipo: { type: String }
+    tipo: { type: String },
+    fecha_oferta: { type: Date },
+    sueldo: { type: Number },
 })
 
 const jugadorSchema = new Schema(
@@ -53,6 +55,7 @@ const jugadorSchema = new Schema(
         indemnizacion: { type: Number },
         oferta: { type: [ofertaSchema]},
         transferible: { type: String },
+        libre: { type: String },
     },
     { timestamps: true }
 );

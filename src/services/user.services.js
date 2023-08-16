@@ -211,6 +211,7 @@ class UserService {
                 role: user.role,
                 equipo:  user.equipo,
                 tipo: user.tipo,
+                foto: user.foto,
                 last_connection: user.last_connection
             };
 
