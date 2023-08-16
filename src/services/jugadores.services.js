@@ -84,6 +84,9 @@ class JugadoresService {
         if (dorsalExistente) {
             throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
         }
+        if (jugador.nacionalidad === 'Seleccionar') {
+            throw new Error("La nacinalidad del jugador es requerida");
+        }
         if (jugador.contrato === 'Seleccionar') {
             throw new Error("El contrato del jugador es requerido");
         }
@@ -200,6 +203,7 @@ class JugadoresService {
                 clausula: nuevaClausula,
                 indemnizacion:jugador.sueldo / 2,
                 oferta: [],
+                transferible:'No',
             }
             const jugadorNuevo = equipo.jugadores.push(nuevoJugador);
             await equipo.save();
@@ -249,6 +253,9 @@ class JugadoresService {
         const dorsalExistente = equipo.jugadores.find(j => j.dorsal == jugador.dorsal && j._id != jugadorId);
         if (dorsalExistente) {
             throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
+        }
+        if (jugador.nacionalidad === 'Seleccionar') {
+            throw new Error("La nacinalidad del jugador es requerida");
         }
         if (jugador.contrato === 'Seleccionar') {
             throw new Error("El contrato del jugador es requerido");
@@ -356,6 +363,7 @@ class JugadoresService {
                 clausula: equipo.jugadores[jugadorIndex].clausula,
                 indemnizacion: jugador.sueldo / 2,
                 oferta: equipo.jugadores[jugadorIndex].oferta,
+                transferible: equipo.jugadores[jugadorIndex].transferible,
                 _id: equipo.jugadores[jugadorIndex]._id,
                 createdAt: equipo.jugadores[jugadorIndex].createdAt,
                 updatedAt: equipo.jugadores[jugadorIndex].updatedAt
@@ -827,6 +835,102 @@ class JugadoresService {
             throw new Error("Error al editar jugador del equipo");
         }
     };
+
+    renovarJugador = async (equipoId, jugadorId, jugador) => {
+        const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+        if (jugadorIndex === -1) {
+            throw new Error("El jugador no existe en el equipo");
+        }
+        if (jugador.contrato === 'Seleccionar') {
+            throw new Error("El contrato del jugador es requerido");
+        }
+        if (jugador.sueldo < equipo.jugadores[jugadorIndex].sueldoCalculo) {
+            throw new Error(`El sueldo del jugador debe ser mayor o igual a ${equipo.jugadores[jugadorIndex].sueldoCalculo}`);
+        }
+        if (jugador.contrato === 0.5) {
+            jugador.sueldo = jugador.sueldo / 2;
+        } else if (jugador.contrato === 1) {
+            jugador.sueldo = jugador.sueldo;
+        }else if (jugador.contrato === 2) {
+            jugador.sueldo = jugador.sueldo * 2;
+        }else if (jugador.contrato === 3) {
+            jugador.sueldo = jugador.sueldo * 3;
+        }else if (jugador.contrato === 4) {
+            jugador.sueldo = jugador.sueldo * 4;
+        }
+        const sueldoAnterior = equipo.jugadores[jugadorIndex].sueldo;
+        equipo.banco_fondo -= sueldoAnterior;
+
+        const jugadorActual = equipo.jugadores[jugadorIndex];
+        let sueldoTotalJugadores = 0;
+        for (const j of equipo.jugadores) {
+            if (j._id !== jugadorId) {
+                sueldoTotalJugadores += parseFloat(j.sueldo);
+            }
+        }
+        if (equipo.jugadores[jugadorIndex].sueldo !== jugador.sueldo) {
+            sueldoTotalJugadores += parseFloat(jugador.sueldo) - parseFloat(jugadorActual.sueldo);
+        }
+        if (sueldoTotalJugadores > equipo.banco_fondo) {
+            throw new Error("Excediste el límite salarial, no cumples con el Fair play financiero");
+        }
+
+        try {
+            let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
+            if (jugador.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto);
+                newFotoUrl = result.secure_url;
+            }
+            const updatedJugador = {
+                sueldo: jugador.sueldo,
+                contrato: jugador.contrato,
+            };
+            equipo.jugadores[jugadorIndex].sueldo = updatedJugador.sueldo;
+            equipo.jugadores[jugadorIndex].contrato = updatedJugador.contrato;
+            if (jugador.foto) {
+                equipo.jugadores[jugadorIndex].foto = newFotoUrl;
+            }
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar jugador del equipo");
+        }
+    };
+
+    listaDeTransferibles = async (equipoId, jugadorId, jugador) => {
+        const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+        if (jugadorIndex === -1) {
+            throw new Error("El jugador no existe en el equipo");
+        }
+        try {
+            let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
+            if (jugador.foto) {
+                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto);
+                newFotoUrl = result.secure_url;
+            }
+            const updatedJugador = {
+                transferible: jugador.transferible,
+            };
+            equipo.jugadores[jugadorIndex].transferible = updatedJugador.transferible;
+            if (jugador.foto) {
+                equipo.jugadores[jugadorIndex].foto = newFotoUrl;
+            }
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar jugador del equipo");
+        }
+    }; 
 }
 
 export const jugadoresService = new JugadoresService();

@@ -51,7 +51,8 @@ const jugadorSchema = new Schema(
         fecha_fichaje: { type: String },
         clausula: { type: Number },
         indemnizacion: { type: Number },
-        oferta: { type: [ofertaSchema]}
+        oferta: { type: [ofertaSchema]},
+        transferible: { type: String },
     },
     { timestamps: true }
 );

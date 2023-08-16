@@ -204,3 +204,27 @@ export const valorMercaoJugador = async (req, res) => {
         return res.status(404).send({ status: "Error", message: error.message });
     }
 };
+
+export const renovarJugador = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    const jugador = req.body;
+    try {
+        const updatedJugador = await jugadoresService.renovarJugador(equipoId,jugadorId,jugador);
+        return res.status(200).send({ status: "OK", message: `Se renovo el jugador correctamente`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
+
+export const listaDeTransferibleJugador = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    const jugador = req.body;
+    try {
+        const updatedJugador = await jugadoresService.listaDeTransferibles(equipoId,jugadorId,jugador);
+        return res.status(200).send({ status: "OK", message: `Se puso el jugador en lista de transferible correctamente`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
