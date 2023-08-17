@@ -8,8 +8,11 @@ const ofertaSchema = new Schema ({
     precio: { type: Number },
     contrato: { type: Number },
     tipo: { type: String },
-    fecha_oferta: { type: Date },
+    fecha_oferta: { type: String },
     sueldo: { type: Number },
+    respuesta: { type: String },
+    comentario: { type: String },
+    email: { type: String }, 
 })
 
 const jugadorSchema = new Schema(
@@ -49,7 +52,7 @@ const jugadorSchema = new Schema(
         sueldoCalculo: { type: Number },
         contrato: { type: Number },
         valor_mercado: { type: Number },
-        fecha_inicio: { type: Date },
+        fecha_inicio: { type: String },
         fecha_fichaje: { type: String },
         clausula: { type: Number },
         indemnizacion: { type: Number },

@@ -1000,6 +1000,9 @@ class JugadoresService {
                 tipo: oferta.tipo,
                 fecha_oferta: new Date(),
                 sueldo: oferta.sueldo,
+                respuesta: oferta.respuesta,
+                comentario: oferta.comentario,
+                email: oferta.email,
             }
             const ofertaNueva = equipo.jugadores[jugadorIndex].oferta.push(nuevaOferta);
             await equipo.save();
