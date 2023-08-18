@@ -252,3 +252,28 @@ export const addOferta = async (req, res) => {
         return res.status(400).send({ status: "Error", message: err.message });
     }
 };
+
+export const editarferta = async (req, res) => {
+    try {
+        const equipoId = req.params.equipoId;
+        const jugadorId = req.params.jugadorId;
+        const ofertaId = req.params.ofertaId;
+        const oferta = req.body;
+        const ofertaEquipo = await jugadoresService.editarOferta(equipoId, jugadorId, ofertaId ,oferta);
+        return res.status(201).send({ status: 'Succes', message: 'Se edito la oferta correctamente', oferta: ofertaEquipo });
+    } catch (err) {
+        return res.status(400).send({ status: "Error", message: err.message });
+    }
+};
+
+export const eliminarOferta = async (req, res) => {
+    try {
+        const equipoId = req.params.equipoId;
+        const jugadorId = req.params.jugadorId;
+        const ofertaId = req.params.ofertaId;
+        const ofertaEquipo = await jugadoresService.eliminarOferta(equipoId, jugadorId, ofertaId,);
+        return res.status(201).send({ status: 'Succes', message: 'Se elimino la oferta correctamente', oferta: ofertaEquipo });
+    } catch (err) {
+        return res.status(400).send({ status: "Error", message: err.message });
+    }
+};

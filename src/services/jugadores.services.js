@@ -1012,6 +1012,48 @@ class JugadoresService {
             throw new Error("Error al crear una oferta");
         }
     }
+
+    editarOferta = async (equipoId, jugadorId, ofertaId, oferta) => {
+        const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+        if (jugadorIndex === -1) {
+            throw new Error("El jugador no existe en el equipo");
+        }
+        const ofertaIndex = equipo.jugadores[jugadorIndex].oferta.findIndex((p) => p._id == ofertaId);
+        if (ofertaIndex === -1) {
+            throw new Error("La oferta no existe en el jugador");
+        }
+        const updatedOferta = {
+            ...equipo.jugadores[jugadorIndex].oferta[ofertaIndex],
+            ...oferta,
+        };
+        const nuevasOfertas = [...equipo.jugadores[jugadorIndex].oferta];
+        nuevasOfertas[ofertaIndex] = updatedOferta;
+
+        const result = await this.jugadores.modelOfertasEdit(equipoId, jugadorId, nuevasOfertas);
+        return updatedOferta;
+    }
+
+    eliminarOferta = async (equipoId, jugadorId, ofertaId) => {
+        const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
+        if (!equipo) {
+            throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+        }
+        const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+        if (jugadorIndex === -1) {
+            throw new Error("El jugador no existe en el equipo");
+        }
+        const ofertaIndex = equipo.jugadores[jugadorIndex].oferta.findIndex((p) => p._id == ofertaId);
+        if (ofertaIndex === -1) {
+            throw new Error("La oferta no existe en el jugador");
+        }
+        equipo.jugadores[jugadorIndex].oferta.splice(ofertaIndex, 1);
+        await equipo.save();
+        return equipo;
+    }
 }
 
 export const jugadoresService = new JugadoresService();
