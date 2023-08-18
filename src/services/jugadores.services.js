@@ -967,6 +967,8 @@ class JugadoresService {
         }
     }; 
 
+    //OFERTAS   
+
     crearOferta = async (equipoId, jugadorId, oferta) => {
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
