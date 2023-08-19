@@ -13,6 +13,7 @@ const ofertaSchema = new Schema ({
     respuesta: { type: String },
     comentario: { type: String },
     email: { type: String }, 
+    id_equipo_destino: { type: String },
 })
 
 const jugadorSchema = new Schema(
@@ -59,6 +60,7 @@ const jugadorSchema = new Schema(
         oferta: { type: [ofertaSchema]},
         transferible: { type: String },
         libre: { type: String },
+        status: { type: String },
     },
     { timestamps: true }
 );

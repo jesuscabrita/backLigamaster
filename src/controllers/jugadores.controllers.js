@@ -277,3 +277,28 @@ export const eliminarOferta = async (req, res) => {
         return res.status(400).send({ status: "Error", message: err.message });
     }
 };
+
+export const fichaDeJugador = async (req, res) => {
+    try {
+        const equipoOrigenId = req.params.equipoOrigenId;
+        const equipoDestinoId = req.params.equipoDestinoId;
+        const jugadorId = req.params.jugadorId;
+        const oferta = req.body
+        const ofertaEquipo = await jugadoresService.fichaDeJugador(equipoOrigenId, equipoDestinoId, jugadorId,oferta);
+        return res.status(201).send({ status: 'Succes', message: 'Se ficho el jugador correctamente', oferta: ofertaEquipo });
+    } catch (err) {
+        return res.status(400).send({ status: "Error", message: err.message });
+    }
+};
+
+export const prestamoDeJugador = async (req, res) => {
+    try {
+        const equipoOrigenId = req.params.equipoOrigenId;
+        const equipoDestinoId = req.params.equipoDestinoId;
+        const jugadorId = req.params.jugadorId;
+        const ofertaEquipo = await jugadoresService.prestamoDeJugador(equipoOrigenId, equipoDestinoId, jugadorId);
+        return res.status(201).send({ status: 'Succes', message: 'Se presto el jugador correctamente', oferta: ofertaEquipo });
+    } catch (err) {
+        return res.status(400).send({ status: "Error", message: err.message });
+    }
+};
