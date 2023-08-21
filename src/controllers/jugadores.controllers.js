@@ -241,6 +241,32 @@ export const recindirJugador = async (req, res) => {
     }
 };
 
+export const inscribirJugador = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    const jugador = req.body;
+    try {
+        const updatedJugador = await jugadoresService.inscribirJugador(equipoId,jugadorId,jugador);
+        return res.status(200).send({ status: "OK", message: `Se inscribio el jugador correctamente`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
+
+export const dorsalJugador = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    const jugador = req.body;
+    try {
+        const updatedJugador = await jugadoresService.dorsalJugador(equipoId,jugadorId,jugador);
+        return res.status(200).send({ status: "OK", message: `Se asigno el dorsal del jugador correctamente`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+}
+
+//OFERTAS
+
 export const addOferta = async (req, res) => {
     try {
         const equipoId = req.params.equipoId;
@@ -298,6 +324,17 @@ export const prestamoDeJugador = async (req, res) => {
         const jugadorId = req.params.jugadorId;
         const ofertaEquipo = await jugadoresService.prestamoDeJugador(equipoOrigenId, equipoDestinoId, jugadorId);
         return res.status(201).send({ status: 'Succes', message: 'Se presto el jugador correctamente', oferta: ofertaEquipo });
+    } catch (err) {
+        return res.status(400).send({ status: "Error", message: err.message });
+    }
+};
+
+export const devolverJugadorPrestamo = async (req, res) => {
+    try {
+        const equipoOrigenId = req.params.equipoOrigenId;
+        const jugadorId = req.params.jugadorId;
+        const ofertaEquipo = await jugadoresService.devolverJugadorPrestamo(equipoOrigenId, jugadorId);
+        return res.status(201).send({ status: 'Succes', message: 'Volvio el jugador correctamente', oferta: ofertaEquipo });
     } catch (err) {
         return res.status(400).send({ status: "Error", message: err.message });
     }

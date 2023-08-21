@@ -61,6 +61,8 @@ const jugadorSchema = new Schema(
         transferible: { type: String },
         libre: { type: String },
         status: { type: String },
+        id_equipo_anterior: { type: String },
+        inscrito: { type: String },
     },
     { timestamps: true }
 );
