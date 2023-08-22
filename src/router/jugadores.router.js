@@ -1,6 +1,6 @@
 import express from "express";
 import { uploader } from "../middlewares/multer.js";
-import { addJugador, addOferta, deleteJugador, devolverJugadorPrestamo, dorsalJugador, editAmarillaJugador, editAsistenciaJugador, editAutoGol, editAzulJugador, editCalculoPartido, editCapitanJugador, editFiguraJugador, editGolJugador, editJornadaJugador, editJugador, editLesionJugador, editPartidosJugador, editRojaJugador, editSuspencionJugador, editarferta, eliminarOferta, fichaDeJugador, inscribirJugador, listaDeTransferibleJugador, prestamoDeJugador, recindirJugador, renovarJugador, valorMercaoJugador } from "../controllers/jugadores.controllers.js";
+import { addJugador, addOferta, calculoContratoJugador, deleteJugador, devolverJugadorPrestamo, dorsalJugador, editAmarillaJugador, editAsistenciaJugador, editAutoGol, editAzulJugador, editCalculoPartido, editCapitanJugador, editFiguraJugador, editGolJugador, editJornadaJugador, editJugador, editLesionJugador, editPartidosJugador, editRojaJugador, editSuspencionJugador, editarferta, eliminarOferta, fichaDeJugador, inscribirJugador, listaDeTransferibleJugador, prestamoDeJugador, recindirJugador, renovarJugador, valorMercaoJugador } from "../controllers/jugadores.controllers.js";
 
 const router = express.Router();
 
@@ -26,6 +26,7 @@ router.put("/:equipoId/transferible/:jugadorId", uploader.single("foto"), listaD
 router.put("/:equipoId/recindir/:jugadorId", uploader.single("foto"), recindirJugador);
 router.put("/:equipoId/inscribir/:jugadorId", uploader.single("foto"), inscribirJugador);
 router.put("/:equipoId/dorsal/:jugadorId", uploader.single("foto"), dorsalJugador);
+router.put("/:equipoId/calculoContrato/:jugadorId", uploader.single("foto"), calculoContratoJugador);
 router.post("/:equipoId/oferta/:jugadorId", addOferta);
 router.put("/:equipoId/ofertaEdit/:jugadorId/:ofertaId", uploader.single("foto"), editarferta);
 router.delete("/:equipoId/deleteOferta/:jugadorId/:ofertaId", eliminarOferta);

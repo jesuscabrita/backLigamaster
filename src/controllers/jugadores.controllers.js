@@ -265,6 +265,17 @@ export const dorsalJugador = async (req, res) => {
     }
 }
 
+export const calculoContratoJugador = async (req, res) => {
+    const equipoId = req.params.equipoId;
+    const jugadorId = req.params.jugadorId;
+    try {
+        const updatedJugador = await jugadoresService.calculoJugadorContrato(equipoId,jugadorId);
+        return res.status(200).send({ status: "OK", message: `Se actualizaron contratos`, updatedJugador });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+}
+
 //OFERTAS
 
 export const addOferta = async (req, res) => {

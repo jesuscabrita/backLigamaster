@@ -1055,6 +1055,65 @@ class JugadoresService {
         }
     }; 
 
+    calculoJugadorContrato = async (equipoId, jugadorId ) => {
+        try {
+            const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
+            if (!equipo) {
+                throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
+            }
+            
+            const jugadorIndex = equipo.jugadores.findIndex((p) => p._id == jugadorId);
+            if (jugadorIndex === -1) {
+                throw new Error("El jugador no existe en el equipo");
+            }
+            
+            const contratoActual = equipo.jugadores[jugadorIndex].contrato;
+            let nuevoContrato = 0;
+            let libre = "No"; 
+        
+            if (contratoActual === 0) {
+                nuevoContrato = 0;
+                libre = "Si";
+                const sueldoJugador = equipo.jugadores[jugadorIndex].sueldo;
+                equipo.banco_fondo -= sueldoJugador;
+            } else if (contratoActual === 0.5) {
+                nuevoContrato = 0;
+                libre = "Si";
+                const sueldoJugador = equipo.jugadores[jugadorIndex].sueldo;
+                equipo.banco_fondo -= sueldoJugador;
+            } else if (contratoActual === 1) {
+                nuevoContrato = 0.5;
+            } else if (contratoActual === 1.5) {
+                nuevoContrato = 1;
+            } else if (contratoActual === 2) {
+                nuevoContrato = 1.5;
+            } else if (contratoActual === 2.5) {
+                nuevoContrato = 2;
+            } else if (contratoActual === 3) {
+                nuevoContrato = 2.5;
+            } else if (contratoActual === 3.5) {
+                nuevoContrato = 3;
+            } else if (contratoActual === 4) {
+                nuevoContrato = 3.5;
+            }
+
+            equipo.jugadores[jugadorIndex].contrato = nuevoContrato;
+            equipo.jugadores[jugadorIndex].libre = libre;
+
+            const ganados = equipo.ganados;
+            const empates = equipo.empates; 
+            const incrementoPorPartido = 1000000; 
+            const incrementoPorEmpate = 500000;
+            equipo.banco_fondo += (ganados * incrementoPorPartido) + (empates * incrementoPorEmpate);
+            
+            await equipo.save();
+            return equipo;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Error al editar jugador del equipo");
+        }
+    };
+
     //OFERTAS   
 
     crearOferta = async (equipoId, jugadorId, oferta) => {
@@ -1295,17 +1354,6 @@ class JugadoresService {
         jugadorTransferido.status = 'Nuevo';
         jugadorTransferido.id_equipo_anterior = 'No';
         jugadorTransferido.inscrito = 'No';
-        if (jugadorTransferido.contrato === 0.5) {
-            jugadorTransferido.contrato = 0;
-        } else if (jugadorTransferido.contrato === 1) {
-            jugadorTransferido.contrato = 0;
-        } else if (jugadorTransferido.contrato === 2) {
-            jugadorTransferido.contrato = 1;
-        } else if (jugadorTransferido.contrato === 3) {
-            jugadorTransferido.contrato = 2;
-        } else if (jugadorTransferido.contrato === 4) {
-            jugadorTransferido.contrato = 3;
-        }
 
         equipoDestino.jugadores.addToSet(jugadorTransferido);
         equipoOrigen.jugadores.pull(jugadorId);
