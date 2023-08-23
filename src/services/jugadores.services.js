@@ -1250,7 +1250,7 @@ class JugadoresService {
             try {
             jugadorTransferido.dorsal = null;
             jugadorTransferido.logo = equipoDestino.logo;
-            jugadorTransferido.equipo = equipoDestino.equipo;
+            jugadorTransferido.equipo = equipoDestino.name;
             jugadorTransferido.fecha_fichaje = new Date();
             jugadorTransferido.oferta = []; 
             jugadorTransferido.status = 'Fichado';
