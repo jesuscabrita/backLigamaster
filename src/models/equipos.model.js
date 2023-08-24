@@ -138,7 +138,14 @@ const equiposSchema = new Schema(
         correo: { type: String },
         categoria: { type: String },
         instagram: { type: String },
-        jugadores: [jugadorSchema]
+        jugadores: [jugadorSchema],
+        statusPlayOff: { type: String },
+        gol_partido_playOff: { type: [Number] },
+        asistencia_partido_playOff: { type: [Number] },
+        amarilla_partido_playOff: { type: [Number] },
+        roja_partido_playOff: { type: [Number] },
+        azul_partido_playOff: { type: [Number] },
+        figura_partido_playOff: { type: [Number] },
     },
     { timestamps: true },
 );
