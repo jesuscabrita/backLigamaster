@@ -286,6 +286,13 @@ class EquiposService {
                         suspendido: "No",
                         jornadas_suspendido: 0,
                         tarjetas_acumuladas: 0,
+                        jugador_statusPlayOff: "No definido",
+                        jugador_gol_partido_playOff: [0, 0, 0, 0],
+                        jugador_asistencia_partido_playOff: [0, 0, 0, 0],
+                        jugador_amarilla_partido_playOff: [0, 0, 0, 0],
+                        jugador_roja_partido_playOff: [0, 0, 0, 0],
+                        jugador_azul_partido_playOff: [0, 0, 0, 0],
+                        jugador_figura_partido_playOff: [0, 0, 0, 0],
                     };
                 }),
                 statusPlayOff: "No definido",
