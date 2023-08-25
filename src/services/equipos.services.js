@@ -145,12 +145,12 @@ class EquiposService {
             instagram: equipo.instagram.trim(),
             jugadores: [],
             statusPlayOff: "No definido",
-            gol_partido_playOff: [0, 0, 0, 0],
-            asistencia_partido_playOff: [0, 0, 0, 0],
-            amarilla_partido_playOff: [0, 0, 0, 0],
-            roja_partido_playOff: [0, 0, 0, 0],
-            azul_partido_playOff: [0, 0, 0, 0],
-            figura_partido_playOff: [0, 0, 0, 0],
+            gol_partido_playOff: 0,
+            asistencia_partido_playOff: 0,
+            amarilla_partido_playOff: 0,
+            roja_partido_playOff: 0,
+            azul_partido_playOff: 0,
+            figura_partido_playOff: 0,
         }
         await this.enviarCorreo(newEquipo);
         equipos?.push(newEquipo)
@@ -289,12 +289,12 @@ class EquiposService {
                     };
                 }),
                 statusPlayOff: "No definido",
-                gol_partido_playOff: [0, 0, 0, 0],
-                asistencia_partido_playOff: [0, 0, 0, 0],
-                amarilla_partido_playOff: [0, 0, 0, 0],
-                roja_partido_playOff: [0, 0, 0, 0],
-                azul_partido_playOff: [0, 0, 0, 0],
-                figura_partido_playOff: [0, 0, 0, 0],
+                gol_partido_playOff: 0,
+                asistencia_partido_playOff: 0,
+                amarilla_partido_playOff: 0,
+                roja_partido_playOff: 0,
+                azul_partido_playOff: 0,
+                figura_partido_playOff: 0,
             };
             equipos[equipoIndex] = updatedequipoJugador;
             await this.equipos.modelEquipoReset(equipoID,updatedequipoJugador);

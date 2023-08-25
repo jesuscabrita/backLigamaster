@@ -208,6 +208,13 @@ class JugadoresService {
                 status: 'Nuevo',
                 id_equipo_anterior:'No',
                 inscrito: 'No',
+                jugador_statusPlayOff: "No definido",
+                jugador_gol_partido_playOff: [0, 0, 0, 0],
+                jugador_asistencia_partido_playOff: [0, 0, 0, 0],
+                jugador_amarilla_partido_playOff: [0, 0, 0, 0],
+                jugador_roja_partido_playOff: [0, 0, 0, 0],
+                jugador_azul_partido_playOff: [0, 0, 0, 0],
+                jugador_figura_partido_playOff: [0, 0, 0, 0],
             }
             const jugadorNuevo = equipo.jugadores.push(nuevoJugador);
             await equipo.save();
@@ -372,6 +379,13 @@ class JugadoresService {
                 status: equipo.jugadores[jugadorIndex].status,
                 id_equipo_anterior: equipo.jugadores[jugadorIndex].id_equipo_anterior,
                 inscrito: equipo.jugadores[jugadorIndex].inscrito,
+                jugador_statusPlayOff: equipo.jugadores[jugadorIndex].jugador_statusPlayOff,
+                jugador_gol_partido_playOff: equipo.jugadores[jugadorIndex].jugador_gol_partido_playOff,
+                jugador_asistencia_partido_playOff: equipo.jugadores[jugadorIndex].jugador_asistencia_partido_playOff,
+                jugador_amarilla_partido_playOff: equipo.jugadores[jugadorIndex].jugador_amarilla_partido_playOff,
+                jugador_roja_partido_playOff: equipo.jugadores[jugadorIndex].jugador_roja_partido_playOff,
+                jugador_azul_partido_playOff: equipo.jugadores[jugadorIndex].jugador_azul_partido_playOff,
+                jugador_figura_partido_playOff: equipo.jugadores[jugadorIndex].jugador_figura_partido_playOff,
                 _id: equipo.jugadores[jugadorIndex]._id,
                 createdAt: equipo.jugadores[jugadorIndex].createdAt,
                 updatedAt: equipo.jugadores[jugadorIndex].updatedAt
