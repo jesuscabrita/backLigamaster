@@ -230,6 +230,10 @@ class UserService {
         if (await this.checkTeamNameExists(user.equipo)) {
             throw new Error("El nombre del equipo ya está en uso");
         }
+        const age = this.calculateAge(user.fecha_de_nacimiento);
+        if (age < 18) {
+            throw new Error("Debes tener al menos 18 años para registrarte");
+        }
 
         try {
             const newUser = {
