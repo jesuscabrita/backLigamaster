@@ -42,7 +42,7 @@ class UserService {
     getUsers = async (limit) => {
         try {
             const data = await this.user.modelGetUser();
-            const users = data.map(users => users.toObject());
+            const users = data.map((users) => users.toObject());
             return limit ? users.slice(0, limit) : users;
         } catch (error) {
             console.error(error);
@@ -56,8 +56,34 @@ class UserService {
         if (!user) {
             throw new Error("No se pudo encontrar el usuario seleccionado");
         }
-        const { _id, nombre, apellido, email, role, fecha_de_nacimiento, edad, equipo, foto, tipo, createdAt, last_connectio } = user;
-            return { _id, nombre, apellido, email, role, fecha_de_nacimiento, edad, equipo, foto, tipo, createdAt, last_connectio};
+        const {
+            _id,
+            nombre,
+            apellido,
+            email,
+            role,
+            fecha_de_nacimiento,
+            edad,
+            equipo,
+            foto,
+            tipo,
+            createdAt,
+            last_connectio,
+        } = user;
+        return {
+            _id,
+            nombre,
+            apellido,
+            email,
+            role,
+            fecha_de_nacimiento,
+            edad,
+            equipo,
+            foto,
+            tipo,
+            createdAt,
+            last_connectio,
+        };
     };
 
     findByEmail = async (email) => {
@@ -67,19 +93,25 @@ class UserService {
             throw new Error("No se pudo encontrar el correo seleccionado");
         }
         return user;
-    }
+    };
 
     validarEmail(correo) {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(correo);
-    };
+    }
 
     checkUserEmail = async (email) => {
-        const user = await this.user.modelUserCheck(email)
+        const user = await this.user.modelUserCheck(email);
         return user !== null;
     };
 
-    validateUserData(nombre, apellido, fecha_de_nacimiento, password, repeated_password) {
+    validateUserData(
+        nombre,
+        apellido,
+        fecha_de_nacimiento,
+        password,
+        repeated_password
+    ) {
         if (!nombre) {
             throw new Error("El nombre del usuario es requerido");
         }
@@ -95,11 +127,18 @@ class UserService {
         if (!repeated_password) {
             throw new Error("La contraseña repetida es requerida");
         }
-    };
+    }
 
     isSequentialNumeric = (password) => {
-        const sequentialPatterns = ["12345678", "87654321", "123456789", "987654321", "12345678910", "10987654321"];
-        return sequentialPatterns.some(pattern => password.includes(pattern));
+        const sequentialPatterns = [
+            "12345678",
+            "87654321",
+            "123456789",
+            "987654321",
+            "12345678910",
+            "10987654321",
+        ];
+        return sequentialPatterns.some((pattern) => password.includes(pattern));
     };
 
     containsWhitespace = (password) => {
@@ -111,7 +150,8 @@ class UserService {
         const lowerCaseNombre = nombre.toLowerCase();
         const lowerCaseApellido = apellido.toLowerCase();
         const capitalizedNombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
-        const capitalizedApellido = apellido.charAt(0).toUpperCase() + apellido.slice(1);
+        const capitalizedApellido =
+            apellido.charAt(0).toUpperCase() + apellido.slice(1);
 
         return (
             lowerCasePassword === lowerCaseNombre ||
@@ -123,10 +163,10 @@ class UserService {
 
     calculateAge = (fecha_de_nacimiento) => {
         const today = moment();
-        const birthDate = moment(fecha_de_nacimiento, 'YYYY-MM-DD');
-        const age = today.diff(birthDate, 'years');
+        const birthDate = moment(fecha_de_nacimiento, "YYYY-MM-DD");
+        const age = today.diff(birthDate, "years");
         return age.toString();
-    }
+    };
 
     capitalizeFirstLetter = (str) => {
         return str.toLowerCase().replace(/(?:^|\s)\S/g, function (char) {
@@ -134,8 +174,27 @@ class UserService {
         });
     };
 
+    normalizeTeamName = (name) => {
+        return name
+            .toLowerCase()
+            .replace(/fc|club|\s+/g, "") 
+            .trim();
+    };
+
+    checkTeamNameExists = async (teamName) => {
+        const normalizedTeamName = this.normalizeTeamName(teamName);
+        const users = await this.getUsers();
+        return users.some((user) => this.normalizeTeamName(user.equipo) === normalizedTeamName);
+    };
+
     registerUser = async (user) => {
-        this.validateUserData(user.nombre, user.apellido, user.fecha_de_nacimiento, user.password, user.repeated_password);
+        this.validateUserData(
+            user.nombre,
+            user.apellido,
+            user.fecha_de_nacimiento,
+            user.password,
+            user.repeated_password
+        );
         if (!this.validarEmail(user.email)) {
             throw new Error("El correo electrónico no es válido");
         }
@@ -143,7 +202,9 @@ class UserService {
             throw new Error("El correo electrónico ya está en uso");
         }
         if (user.password !== user.repeated_password) {
-            throw new Error("La contraseña repetida no coincide con la contraseña original");
+            throw new Error(
+                "La contraseña repetida no coincide con la contraseña original"
+            );
         }
         if (user.password.length < 8) {
             throw new Error("La contraseña debe tener al menos 8 caracteres");
@@ -154,8 +215,25 @@ class UserService {
         if (this.containsWhitespace(user.password)) {
             throw new Error("La contraseña no puede contener espacios en blanco");
         }
-        if (this.isSameAsNameOrApellido(user.password, user.nombre, user.apellido)) {
-            throw new Error("La contraseña no puede ser igual al nombre o apellido del usuario");
+        if (
+            this.isSameAsNameOrApellido(user.password, user.nombre, user.apellido)
+        ) {
+            throw new Error(
+                "La contraseña no puede ser igual al nombre o apellido del usuario"
+            );
+        }
+        if (!user.edad) {
+            throw new Error(
+                "Debes ingresar tu edad"
+            );
+        }
+        if (!user.equipo) {
+            throw new Error(
+                "Debes ingresar el nombre de tu equipo"
+            );
+        }
+        if (await this.checkTeamNameExists(user.equipo)) {
+            throw new Error("El nombre del equipo ya está en uso");
         }
 
         try {
@@ -164,12 +242,12 @@ class UserService {
                 apellido: this.capitalizeFirstLetter(user.apellido),
                 fecha_de_nacimiento: user.fecha_de_nacimiento,
                 email: user.email,
-                edad: this.calculateAge(user.fecha_de_nacimiento) ,
+                edad: this.calculateAge(user.fecha_de_nacimiento),
                 password: createHash(user.password),
-                role: 'usuario',
+                role: "usuario",
                 equipo: this.capitalizeFirstLetter(user.equipo),
-                foto: 'no definida',
-                tipo: 'no definido',
+                foto: "no definida",
+                tipo: "no definido",
             };
 
             await this.user.modelUserCreate(newUser);
@@ -182,21 +260,26 @@ class UserService {
 
     loginUser = async (email, password, req, res) => {
         try {
-            
-        const user = await this.user.modelRegisterAndLogin(email);
-        if (!user) {
-            return { status: "error", error: `El email ${email} no es correcto` };
-        }
-        const validPassword = isValidPassword(user, password);
-        if (!validPassword) {
-            return { status: "error", error: 'la contraseña es incorrecta' };
-        }
+            if (!email) {
+                return { status: "error", error: "Debes ingresar un email" };
+            }
+            const user = await this.user.modelRegisterAndLogin(email);
+            if (!user) {
+                return { status: "error", error: `El email ${email} no es correcto` };
+            }
+            if (!password) {
+                return { status: "error", error: "Debes ingresar una contraseña" };
+            }
+            const validPassword = isValidPassword(user, password);
+            if (!validPassword) {
+                return { status: "error", error: "la contraseña es incorrecta" };
+            }
 
             const { email: userEmail, role: userRole } = user;
             const token = jwt.sign({ email: userEmail, role: userRole }, "userKey", {
                 expiresIn: "24h",
             });
-            console.log('token', token);
+            console.log("token", token);
             res.cookie("tokenCookie", token, { httpOnly: true });
             user.last_connection = new Date();
             await user.save();
@@ -209,10 +292,10 @@ class UserService {
                 edad: user.edad,
                 fecha_de_nacimiento: user.fecha_de_nacimiento,
                 role: user.role,
-                equipo:  user.equipo,
+                equipo: user.equipo,
                 tipo: user.tipo,
                 foto: user.foto,
-                last_connection: user.last_connection
+                last_connection: user.last_connection,
             };
 
             return {
@@ -221,7 +304,7 @@ class UserService {
                 payload: req.session.user,
             };
         } catch (error) {
-            return { status: "error", error: 'error al inicar sesion' };
+            return { status: "error", error: "error al inicar sesion" };
         }
     };
 
@@ -230,7 +313,7 @@ class UserService {
             req.session.destroy();
             return { status: "success", message: "Sesión cerrada" };
         } catch (error) {
-            return { status: "error", error: 'No se pudo cerrar sesion' };
+            return { status: "error", error: "No se pudo cerrar sesion" };
         }
     };
 
@@ -248,18 +331,18 @@ class UserService {
     solicitarContraseña = async (email) => {
         try {
             const user = await this.findByEmail(email);
-            const resetToken = this.generateToken(user.id, '15m');
+            const resetToken = this.generateToken(user.id, "15m");
             const isTokenValid = await this.isValidResetToken(resetToken);
             if (!isTokenValid) {
-                throw new Error('Token inválido o expirado');
+                throw new Error("Token inválido o expirado");
             }
             await this.user.saveResetToken(user._id, resetToken);
             await this.sendPasswordResetEmail(email, resetToken);
         } catch (error) {
             console.error(error);
-            throw new Error('No se pudo encontrar el correo seleccionado');
+            throw new Error("No se pudo encontrar el correo seleccionado");
         }
-    }
+    };
 
     restablecerContraseña = async (email, newPassword, userbody) => {
         try {
@@ -272,7 +355,9 @@ class UserService {
                 throw new Error("No puedes usar la misma contraseña anterior.");
             }
             if (newPassword !== userbody.repeated_password) {
-                throw new Error("La contraseña repetida no coincide con la nueva contraseña");
+                throw new Error(
+                    "La contraseña repetida no coincide con la nueva contraseña"
+                );
             }
             if (newPassword.length < 8) {
                 throw new Error("La contraseña debe tener al menos 8 caracteres");
@@ -285,7 +370,10 @@ class UserService {
             }
             const hashedPassword = createHash(newPassword);
             await this.user.modelUpdateUserPassword(email, hashedPassword);
-            return { status: "success", message: "Contraseña restablecida correctamente." };
+            return {
+                status: "success",
+                message: "Contraseña restablecida correctamente.",
+            };
         } catch (error) {
             console.error(error);
             return { status: "error", error: error.message };
@@ -307,9 +395,9 @@ class UserService {
             await this.user.modelUserEdit(userId, updatedUser);
             return updatedUser;
         } catch (error) {
-            throw new Error('no se pudo editar , error interno')
+            throw new Error("no se pudo editar , error interno");
         }
-    }
+    };
 
     deleteUser = async (userId) => {
         try {
@@ -321,10 +409,9 @@ class UserService {
             usuarios.splice(usuarioIndex, 1);
             await this.user.modelUserDelete(userId);
         } catch (error) {
-            throw new Error('No se pudo eliminar el usuario');
+            throw new Error("No se pudo eliminar el usuario");
         }
     };
-
 }
 
 export const userService = new UserService();
