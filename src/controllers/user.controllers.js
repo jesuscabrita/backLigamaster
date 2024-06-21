@@ -43,7 +43,6 @@ export const loginUser = async (req, res) => {
         }
         res.send(result);
     } catch (error) {
-        console.log("erro", error);
         return res.status(500).send({ status: "Error", message: err.message });
     }
 };
