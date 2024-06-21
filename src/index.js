@@ -15,7 +15,7 @@ import initializePassport from "./middlewares/passport.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 
-export const app = express();
+const app = express();
 
 app.use(cors());
 app.use(compression({ brotli: { enabled: true, zlib: { } } }))
@@ -47,3 +47,5 @@ app.listen(PORT, () => {
 });
 
 connectToDatabase();
+
+export default app;
