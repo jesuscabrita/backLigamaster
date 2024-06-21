@@ -222,11 +222,6 @@ class UserService {
                 "La contraseña no puede ser igual al nombre o apellido del usuario"
             );
         }
-        if (!user.edad) {
-            throw new Error(
-                "Debes ingresar tu edad"
-            );
-        }
         if (!user.equipo) {
             throw new Error(
                 "Debes ingresar el nombre de tu equipo"
