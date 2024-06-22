@@ -230,6 +230,11 @@ class UserService {
         if (await this.checkTeamNameExists(user.equipo)) {
             throw new Error("El nombre del equipo ya está en uso");
         }
+        if (!user.categoria) {
+            throw new Error(
+                "Debes seleccionar una categoria"
+            );
+        }
         const age = this.calculateAge(user.fecha_de_nacimiento);
         if (age < 18) {
             throw new Error("Debes tener al menos 18 años para registrarte");
@@ -245,6 +250,8 @@ class UserService {
                 password: createHash(user.password),
                 role: "usuario",
                 equipo: this.capitalizeFirstLetter(user.equipo),
+                categoria: user.categoria,
+                subCategoria:'no definida',
                 foto: "no definida",
                 tipo: "no definido",
             };
@@ -278,7 +285,6 @@ class UserService {
             const token = jwt.sign({ email: userEmail, role: userRole }, "userKey", {
                 expiresIn: "24h",
             });
-            console.log("token", token);
             res.cookie("tokenCookie", token, { httpOnly: true });
             user.last_connection = new Date();
             await user.save();
@@ -292,6 +298,8 @@ class UserService {
                 fecha_de_nacimiento: user.fecha_de_nacimiento,
                 role: user.role,
                 equipo: user.equipo,
+                categoria: user.categoria,
+                subCategoria: user.subCategoria,
                 tipo: user.tipo,
                 foto: user.foto,
                 last_connection: user.last_connection,
