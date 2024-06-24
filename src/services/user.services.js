@@ -398,6 +398,10 @@ class UserService {
             if (usuarioIndex === -1) {
                 throw new Error(`No se encontró el usuario con ID ${userId}`);
             }
+            if (changes.fecha_de_nacimiento) {
+                const nuevaEdad = this.calculateAge(changes.fecha_de_nacimiento);
+                changes.edad = nuevaEdad;
+            }
             const updatedUser = {
                 ...usuarios[usuarioIndex],
                 ...changes,
