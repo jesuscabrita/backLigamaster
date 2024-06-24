@@ -399,7 +399,9 @@ class UserService {
                 throw new Error(`No se encontró el usuario con ID ${userId}`);
             }
             if (changes.fecha_de_nacimiento) {
-                const nuevaEdad = this.calculateAge(changes.fecha_de_nacimiento);
+                const formattedFechaDeNacimiento = moment(changes.fecha_de_nacimiento).format("YYYY-MM-DD");
+                changes.fecha_de_nacimiento = formattedFechaDeNacimiento;
+                const nuevaEdad = this.calculateAge(formattedFechaDeNacimiento);
                 changes.edad = nuevaEdad;
             }
             const updatedUser = {
