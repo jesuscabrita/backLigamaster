@@ -59,9 +59,9 @@ class EquiposService {
         if (!correo) {
             throw new Error("El correo del equipo es requerido");
         }
-        if (!instagram) {
-            throw new Error("El instagram del equipo es requerido");
-        }
+        // if (!instagram) {
+        //     throw new Error("El instagram del equipo es requerido");
+        // }
     }
 
     eliminarImagenCloudinary = async (publicId) => {
@@ -141,7 +141,8 @@ class EquiposService {
             autogol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             estado: 'enCola',
             correo: equipo.correo.trim(),
-            categoria: 'Primera',
+            categoria: equipo.categoria.trim(),
+            subCategoria: equipo.subCategoria.trim(),
             instagram: equipo.instagram.trim(),
             jugadores: [],
             statusPlayOff: "No definido",
@@ -152,7 +153,7 @@ class EquiposService {
             azul_partido_playOff: 0,
             figura_partido_playOff: 0,
         }
-        await this.enviarCorreo(newEquipo);
+        // await this.enviarCorreo(newEquipo);
         equipos?.push(newEquipo)
         const equipoCreao = await this.equipos.modeEquiposCreate(newEquipo);
         return equipoCreao;
