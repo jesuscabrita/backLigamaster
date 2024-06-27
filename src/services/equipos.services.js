@@ -1,8 +1,10 @@
 import { equiposRepository } from "../repositories/equipos.repository.js";
+import { userRepository } from "../repositories/user.repository.js";
 
 class EquiposService {
     constructor() {
         this.equipos = equiposRepository;
+        this.user = userRepository;
     }
 
     getEquipos = async (limit) => {
@@ -52,15 +54,15 @@ class EquiposService {
         }
     };
 
-    validateEquiposData(name, correo, instagram) {
+    validateEquiposData(name, correo, categoria) {
         if (!name) {
             throw new Error("El nombre del equipo es requerido");
         }
         if (!correo) {
             throw new Error("El correo del equipo es requerido");
         }
-        // if (!instagram) {
-        //     throw new Error("El instagram del equipo es requerido");
+        // if (!categoria) {
+        //     throw new Error("La categoria del equipo es requerido");
         // }
     }
 
@@ -89,7 +91,7 @@ class EquiposService {
     };
 
     crearEquipo = async (equipo) => {
-        this.validateEquiposData(equipo.name, equipo.correo, equipo.instagram);
+        this.validateEquiposData(equipo.name, equipo.correo, equipo.categoria);
         if (!this.validarEmail(equipo.correo)) {
             throw new Error(`El correo "${equipo.correo}" no es válido`);
         }
@@ -124,7 +126,7 @@ class EquiposService {
             goles_en_Contra: 0,
             diferencia_de_Goles: 0,
             puntos: 0,
-            last5: ["neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral", "neutral",],
+            last5: Array(13).fill("neutral"),
             logo: newLogoUrl,
             puntaje_anterior: 0,
             foto_equipo: "",
@@ -134,11 +136,11 @@ class EquiposService {
             tarjetasRojas: 0,
             director_tecnico: [],
             delegado: [],
-            fecha: ["No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido"],
-            arbitro: ["No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido", "No definido"],
+            fecha: Array(13).fill("No definido"),
+            arbitro: Array(13).fill("No definido"),
             estadio: 'No definido',
-            gol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            autogol_partido: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            gol_partido: Array(13).fill(0),
+            autogol_partido: Array(13).fill(0),
             estado: 'enCola',
             correo: equipo.correo.trim(),
             categoria: equipo.categoria.trim(),
@@ -156,6 +158,16 @@ class EquiposService {
         // await this.enviarCorreo(newEquipo);
         equipos?.push(newEquipo)
         const equipoCreao = await this.equipos.modeEquiposCreate(newEquipo);
+        const usuario = await this.user.modelFilter(equipo.correo);
+        if (!usuario) {
+            throw new Error(`No se encontró el usuario con el correo "${equipo.correo}"`);
+        }
+        const cambios = {
+            categoria: equipo.categoria.trim(),
+            foto: newLogoUrl
+        };
+
+        await this.user.modelUserEdit(usuario._id, cambios);
         return equipoCreao;
     }
 

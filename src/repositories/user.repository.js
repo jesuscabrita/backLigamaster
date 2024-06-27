@@ -73,6 +73,10 @@ class UserRepository {
         return userModel.updateOne({ _id: userId }, { $set: updatedUser });
     };
 
+    modelFilter = (correo)=>{
+        return userModel.findOne({ email: correo });
+    }
+
     modelUserDelete = (userId) => {
         return userModel.findByIdAndDelete(userId);
     };
