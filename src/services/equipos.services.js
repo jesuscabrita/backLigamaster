@@ -163,7 +163,7 @@ class EquiposService {
             throw new Error(`No se encontró el usuario con el correo "${equipo.correo}"`);
         }
         const cambios = {
-            categoria: equipo.categoria.trim(),
+            subCategoria: equipo.subCategoria.trim(),
             foto: newLogoUrl
         };
 
