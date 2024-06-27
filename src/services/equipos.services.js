@@ -117,7 +117,7 @@ class EquiposService {
         }
 
         const newEquipo = {
-            name: equipo.name.trim(),
+            name: equipo.name,
             partidosJugados: 0,
             ganados: 0,
             empates: 0,
@@ -142,10 +142,10 @@ class EquiposService {
             gol_partido: Array(13).fill(0),
             autogol_partido: Array(13).fill(0),
             estado: 'enCola',
-            correo: equipo.correo.trim(),
-            categoria: equipo.categoria.trim(),
-            subCategoria: equipo.subCategoria.trim(),
-            instagram: equipo.instagram.trim(),
+            correo: equipo.correo,
+            categoria: equipo.categoria,
+            subCategoria: equipo.subCategoria,
+            instagram: equipo.instagram,
             jugadores: [],
             statusPlayOff: "No definido",
             gol_partido_playOff: 0,
@@ -163,7 +163,7 @@ class EquiposService {
             throw new Error(`No se encontró el usuario con el correo "${equipo.correo}"`);
         }
         const cambios = {
-            subCategoria: equipo.subCategoria.trim(),
+            subCategoria: equipo.subCategoria,
             foto: newLogoUrl
         };
 
