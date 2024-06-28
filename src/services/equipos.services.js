@@ -212,9 +212,9 @@ class EquiposService {
         await this.equipos.modelEquiposEdit(id, updatedProduct);
 
         const usuario = await this.user.modelFilter(changes.correo);
-        if (!usuario) {
-            throw new Error(`No se encontró el usuario con el correo "${changes.correo}"`);
-        }
+        // if (!usuario) {
+        //     throw new Error(`No se encontró el usuario con el correo "${changes.correo}"`);
+        // }
         const cambios = {
             equipo: changes.name,
             email: changes.correo,
