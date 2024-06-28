@@ -219,7 +219,7 @@ class EquiposService {
             equipo: changes.name,
             email: changes.correo,
             categoria: changes.categoria,
-            foto: result.secure_url,
+            foto: changes.logo,
         };
 
         await this.user.modelUserEdit(usuario._id, cambios);
