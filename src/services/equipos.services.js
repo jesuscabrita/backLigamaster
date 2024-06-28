@@ -164,6 +164,7 @@ class EquiposService {
         }
         const cambios = {
             subCategoria: equipo.subCategoria,
+            categoria: equipo.categoria,
             foto: newLogoUrl
         };
 
