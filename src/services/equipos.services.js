@@ -232,6 +232,7 @@ class EquiposService {
         if (index === -1) {
             throw new Error(`No se encontró el equipo con ID ${id}`);
         }
+        const equipoActual = equipos[index];
 
         const logo = equipos[index].logo;
 
@@ -241,6 +242,15 @@ class EquiposService {
         }
         equipos.splice(index, 1);
         await this.equipos.modelEquiposDelete(id);
+        const usuario = await this.user.modelFilter(equipoActual.correo);
+
+        if (!usuario) {
+            throw new Error(`No se encontró el usuario con el correo "${equipoActual.correo}"`);
+        }
+        const cambios = {
+            foto: 'no definida',
+        };
+        await this.user.modelUserEdit(usuario._id, cambios);
         return `Se eliminó el equipo con _id : "${id}" correctamente`;
     }
 
