@@ -42,6 +42,17 @@ export const editEquipos = async (req, res) => {
     }
 };
 
+export const editarEstadosLigas = async (req, res) => {
+    const equipoID = req.params.id;
+    const changes = req.body;
+    try {
+        const updatedEquipo = await equiposService.editarEstadosLigas(equipoID, { ...changes });
+        return res.status(200).send({ status: "OK", message: `El equipo se edito correctamente`, updatedEquipo });
+    } catch (error) {
+        return res.status(404).send({ status: "Error", message: error.message });
+    }
+};
+
 export const deleteEquipos = async (req, res) => {
     const equipoID = req.params.id;
     try {

@@ -226,6 +226,47 @@ class EquiposService {
         return updatedProduct;
     }
 
+    editarEstadosLigas = async (id, changes) => {
+        const equipos = await this.getEquipos();
+        const equipoIndex = equipos.findIndex((equipo) => equipo._id == id);
+        if (equipoIndex === -1) {
+            throw new Error(`No se encontró el equipo con ID ${id}`);
+        }
+        const equipoActual = equipos[equipoIndex];
+        let logoChanged = false;
+
+        if (changes.logo && changes.logo !== equipoActual.logo) {
+            logoChanged = true;
+        }
+
+        if (!changes.logo || changes.logo === equipoActual.logo) {
+            delete changes.logo;
+        }
+
+        if (logoChanged) {
+            if (equipoActual.logo) {
+                const publicId = this.obtenerPublicIdDesdeUrl(equipoActual.logo);
+                await this.eliminarImagenCloudinary(publicId);
+            }
+        }
+
+        if (changes.logo) {
+            const nombreCorto = this.equipos.generarNombreCorto();
+            const nombreAleatorio = this.generarNumeroAleatorio();
+            const nombreImagen = `${nombreCorto}_${nombreAleatorio}`;
+            const result = await this.equipos.claudinaryUploader(changes.logo, nombreImagen);
+            changes.logo = result.secure_url;
+        }
+
+        const updatedProduct = {
+            ...equipos[equipoIndex],
+            ...changes,
+        };
+        equipos[equipoIndex] = updatedProduct;
+        await this.equipos.modelEquiposEdit(id, updatedProduct);
+        return updatedProduct;
+    }
+
     eliminarEquipo = async (id) => {
         const equipos = await this.getEquipos();
         const index = equipos.findIndex((equipo) => equipo._id == id);
