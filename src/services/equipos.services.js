@@ -90,6 +90,19 @@ class EquiposService {
         }
     };
 
+    normalizeTeamName = (name) => {
+        return name
+            .toLowerCase()
+            .replace(/fc|club|\s+/g, "") 
+            .trim();
+    };
+
+    checkTeamNameExists = async (teamName) => {
+        const normalizedTeamName = this.normalizeTeamName(teamName);
+        const equipos = await this.getEquipos();
+        return equipos.some((equipo) => this.normalizeTeamName(equipo.name) === normalizedTeamName);
+    };
+
     crearEquipo = async (equipo) => {
         this.validateEquiposData(equipo.name, equipo.correo, equipo.categoria);
         if (!this.validarEmail(equipo.correo)) {
@@ -179,13 +192,11 @@ class EquiposService {
             throw new Error(`No se encontró el equipo con ID ${id}`);
         }
 
-        
         if (!this.validarEmail(changes.correo)) {
             throw new Error(`El correo "${changes.correo}" no es válido`);
         }
-        const nameEquipo = await this.checkEquipoName(changes.name)
-        if (nameEquipo) {
-            throw new Error(`El equipo "${changes.name}" ya existe`);
+        if (await this.checkTeamNameExists(changes.name)) {
+            throw new Error(`El nombre del equipo "${changes.name}" ya está en uso`);
         }
         
         const equipoActual = equipos[equipoIndex];
