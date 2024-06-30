@@ -178,6 +178,20 @@ class EquiposService {
         if (equipoIndex === -1) {
             throw new Error(`No se encontró el equipo con ID ${id}`);
         }
+
+        
+        if (!this.validarEmail(changes.correo)) {
+            throw new Error(`El correo "${changes.correo}" no es válido`);
+        }
+        const existeEquipoConCorreo = await this.checkEquipoCorreo(changes.correo);
+        if (existeEquipoConCorreo) {
+            throw new Error(`Ya existe un equipo registrado con el correo "${changes.correo}"`);
+        }
+        const nameEquipo = await this.checkEquipoName(changes.name)
+        if (nameEquipo) {
+            throw new Error(`El equipo "${changes.name}" ya existe`);
+        }
+        
         const equipoActual = equipos[equipoIndex];
         let logoChanged = false;
 
