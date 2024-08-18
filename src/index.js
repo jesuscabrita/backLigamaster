@@ -8,7 +8,7 @@ import morgan from "morgan";
 import { fileSizeLimitMiddleware } from "./middlewares/fileSizeLimit.js";
 import { plugin_Rutas } from "./router/routes.js";
 import { addLogger } from "./middlewares/logger.js";
-import compression from "express-compression";
+import compression from "compression";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import initializePassport from "./middlewares/passport.js";
@@ -18,7 +18,7 @@ import MongoStore from "connect-mongo";
 const app = express();
 
 app.use(cors());
-app.use(compression({ brotli: { enabled: true, zlib: { } } }))
+app.use(compression({ brotli: { enabled: true, zlib: {} } }));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use("/", express.static(`${__dirname}/public`));
@@ -40,10 +40,17 @@ app.use(
     })
 );
 
-plugin_Rutas( app )
+plugin_Rutas(app)
 
 app.listen(PORT, () => {
-    console.log(`Servidor corre en el puerto ${PORT}`);
+    console.log(`
+    +-------------------------------------------------+
+    |                                                 |
+        🖥️ NODE ENVIRONMENT: http://localhost:${PORT}/
+    |                                                 |
+    +-------------------------------------------------+
+    `)
+    console.log(`🚀 Servidor escuchando en el puerto ${PORT}`);
 });
 
 connectToDatabase();
