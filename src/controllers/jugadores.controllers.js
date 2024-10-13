@@ -162,8 +162,8 @@ export const editLesionJugador = async (req, res) => {
     const jugadorId = req.params.jugadorId;
     const jugador = req.body;
     try {
-        const updatedJugador = await jugadoresService.editarLesionJugador(equipoId,jugadorId,jugador);
-        return res.status(200).send({ status: "OK", message: `El jugador se editó correctamente`, updatedJugador });
+        const updatedJugador = await jugadoresService.editarLesionJugador(equipoId, jugadorId, jugador);
+        return res.status(200).send({ status: "OK", message: jugador?.lesion === 'Si' ? `El jugador se lesiono` : 'El jugador se recupero de su lesion', updatedJugador });
     } catch (error) {
         return res.status(404).send({ status: "Error", message: error.message });
     }
@@ -186,8 +186,8 @@ export const editCapitanJugador = async (req, res) => {
     const jugadorId = req.params.jugadorId;
     const jugador = req.body;
     try {
-        const updatedJugador = await jugadoresService.editarCapitanJugador(equipoId,jugadorId,jugador);
-        return res.status(200).send({ status: "OK", message: `El jugador se editó correctamente`, updatedJugador });
+        const updatedJugador = await jugadoresService.editarCapitanJugador(equipoId, jugadorId, jugador);
+        return res.status(200).send({ status: "OK", message: jugador.capitan === 'Si' ? `El jugador es capitan` : 'El jugador no es capitan', updatedJugador });
     } catch (error) {
         return res.status(404).send({ status: "Error", message: error.message });
     }
@@ -222,8 +222,8 @@ export const listaDeTransferibleJugador = async (req, res) => {
     const jugadorId = req.params.jugadorId;
     const jugador = req.body;
     try {
-        const updatedJugador = await jugadoresService.listaDeTransferibles(equipoId,jugadorId,jugador);
-        return res.status(200).send({ status: "OK", message: `Se puso el jugador en lista de transferible correctamente`, updatedJugador });
+        const updatedJugador = await jugadoresService.listaDeTransferibles(equipoId, jugadorId, jugador);
+        return res.status(200).send({ status: "OK", message: jugador.transferible === 'Si' ? `Se puso el jugador en lista de transferible correctamente` : 'Se saco de la lista de transferencias', updatedJugador });
     } catch (error) {
         return res.status(404).send({ status: "Error", message: error.message });
     }

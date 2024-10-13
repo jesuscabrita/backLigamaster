@@ -54,16 +54,13 @@ class EquiposService {
         }
     };
 
-    validateEquiposData(name, correo, categoria) {
+    validateEquiposData(name, correo) {
         if (!name) {
             throw new Error("El nombre del equipo es requerido");
         }
         if (!correo) {
             throw new Error("El correo del equipo es requerido");
         }
-        // if (!categoria) {
-        //     throw new Error("La categoria del equipo es requerido");
-        // }
     }
 
     eliminarImagenCloudinary = async (publicId) => {
@@ -104,7 +101,7 @@ class EquiposService {
     };
 
     crearEquipo = async (equipo) => {
-        this.validateEquiposData(equipo.name, equipo.correo, equipo.categoria);
+        this.validateEquiposData(equipo.name, equipo.correo);
         if (!this.validarEmail(equipo.correo)) {
             throw new Error(`El correo "${equipo.correo}" no es válido`);
         }

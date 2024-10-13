@@ -19,6 +19,7 @@ const ofertaSchema = new Schema ({
 const jugadorSchema = new Schema(
     {
         name: { type: String },
+        documento: { type: String },
         edad: { type: Number },
         capitan: { type: String },
         posicion: { type: String },
@@ -51,6 +52,7 @@ const jugadorSchema = new Schema(
         foto: { type: String },
         sueldo: { type: Number },
         sueldoCalculo: { type: Number },
+        sueldoProximo: { type: Number },
         contrato: { type: Number },
         valor_mercado: { type: Number },
         fecha_inicio: { type: String },

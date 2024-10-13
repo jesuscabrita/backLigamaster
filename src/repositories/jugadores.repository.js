@@ -4,6 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 class JugadoresRepository {
     constructor() {}
 
+    modelJugadoresEquiposGet = () => {
+        return equiposModel.find();
+    }
+
     modelJugadoresFindById = (equipoId) => {
         return equiposModel.findById(equipoId);
     }

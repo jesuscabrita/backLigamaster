@@ -122,7 +122,7 @@ class UserService {
         if (!apellido) {
             throw new Error("El apellido del usuario es requerido");
         }
-        if (!fecha_de_nacimiento) {
+        if (fecha_de_nacimiento === 'Invalid date') {
             throw new Error("La fecha nacimiento del usuario es requerida");
         }
         if (!password) {
@@ -205,6 +205,10 @@ class UserService {
         if (await this.checkUserEmail(user.email)) {
             throw new Error("El correo electrónico ya está en uso");
         }
+        const age = this.calculateAge(user.fecha_de_nacimiento);
+        if (age < 18) {
+            throw new Error("Debes tener al menos 18 años para registrarte");
+        }
         if (user.password !== user.repeated_password) {
             throw new Error(
                 "La contraseña repetida no coincide con la contraseña original"
@@ -234,16 +238,6 @@ class UserService {
         if (await this.checkTeamNameExists(user.equipo)) {
             throw new Error("El nombre del equipo ya está en uso");
         }
-        if (!user.categoria) {
-            throw new Error(
-                "Debes seleccionar una categoria"
-            );
-        }
-        const age = this.calculateAge(user.fecha_de_nacimiento);
-        if (age < 18) {
-            throw new Error("Debes tener al menos 18 años para registrarte");
-        }
-
         try {
             const newUser = {
                 nombre: this.capitalizeFirstLetter(user.nombre),
@@ -254,8 +248,6 @@ class UserService {
                 password: createHash(user.password),
                 role: "usuario",
                 equipo: this.capitalizeFirstLetter(user.equipo),
-                categoria: user.categoria,
-                subCategoria:'no definida',
                 foto: "no definida",
                 tipo: "no definido",
             };
@@ -302,8 +294,6 @@ class UserService {
                 fecha_de_nacimiento: user.fecha_de_nacimiento,
                 role: user.role,
                 equipo: user.equipo,
-                categoria: user.categoria,
-                subCategoria: user.subCategoria,
                 tipo: user.tipo,
                 foto: user.foto,
                 last_connection: user.last_connection,
@@ -342,7 +332,7 @@ class UserService {
     solicitarContraseña = async (email) => {
         try {
             const user = await this.findByEmail(email);
-            const resetToken = this.generateToken(user.id, "15m");
+            const resetToken = this.generateToken(email, "15m");
             const isTokenValid = await this.isValidResetToken(resetToken);
             if (!isTokenValid) {
                 throw new Error("Token inválido o expirado");

@@ -8,27 +8,21 @@ class JugadoresService {
         this.equipoCloudinary = equiposRepository;
     }
 
-    validateJugadorData(name, sueldo, posicion, fecha_nacimiento, nacionalidad, dorsal, instagram) {
+    validateJugadorData(name, posicion, fecha_nacimiento, nacionalidad, documento) {
         if (!name) {
             throw new Error("El nombre del jugador es requerido");
         }
-        if (!sueldo) {
-            throw new Error("El sueldo del jugador es requerido");
+        if (!documento){
+            throw new Error("El DNI/Documento del jugador es requerido");
         }
-        if (!posicion) {
-            throw new Error("La posicion del jugador es requerido");
+        if (fecha_nacimiento === 'Invalid date') {
+            throw new Error("La fecha de nacimiento del jugador es requerida");
         }
-        if (!fecha_nacimiento) {
-            throw new Error("La fecha nacimiento del jugador es requerida");
+        if (posicion === 'Elija una opción') {
+            throw new Error("La posicion del jugador es requerida");
         }
-        if (!nacionalidad) {
+        if (nacionalidad === 'Elija una opción') {
             throw new Error("La nacionalidad del jugador es requerida");
-        }
-        if (!dorsal) {
-            throw new Error("El dorsal del jugador es requerido");
-        }
-        if (!instagram) {
-            throw new Error("El instagram del jugador es requerido");
         }
     }
 
@@ -66,45 +60,61 @@ class JugadoresService {
     crearJugador = async (equipoId, jugador) => {
         this.validateJugadorData(
             jugador.name,
-            jugador.sueldo,
             jugador.posicion,
             jugador.fecha_nacimiento,
             jugador.nacionalidad,
-            jugador.dorsal,
-            jugador.instagram
+            jugador.documento,
         )
+        if (jugador.contrato === 'Elija una opción') {
+            throw new Error("Debe seleccionar un contrato");
+        }
+        if (!jugador.sueldo) {
+            throw new Error("El sueldo del jugador es requerido");
+        }
+        if (jugador.sueldo < 500000) {
+            throw new Error("El sueldo del jugador debe ser de al menos 500,000");
+        }
+        if (!jugador.dorsal) {
+            throw new Error("El dorsal del jugador es requerido");
+        }
+
+        const equipos = await this.jugadores.modelJugadoresEquiposGet();
+        const jugadores = equipos?.flatMap(equipo => equipo?.jugadores || []); 
+        const jugadorExistente = jugadores?.some(j => j?.documento === jugador?.documento);
+
+        if (jugadorExistente) {
+            throw new Error(`Ya xiste un jugador con el documento: ${jugador.documento} en otro equipo.`);
+        }
+
         const equipo = await this.jugadores.modelJugadoresFindById(equipoId);
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);
         }
-        if (equipo.jugadores.length >= 10) {
-            throw new Error("Ya se han fichado 10 jugadores en este equipo es el límite");
+        if (equipo.jugadores.length >= 12) {
+            throw new Error("Ya se han fichado 12 jugadores en este equipo es el límite");
         }
         const dorsalExistente = equipo.jugadores.find(j => j.dorsal == jugador.dorsal);
         if (dorsalExistente) {
             throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
         }
-        if (jugador.nacionalidad === 'Seleccionar') {
-            throw new Error("La nacinalidad del jugador es requerida");
-        }
-        if (jugador.contrato === 'Seleccionar') {
-            throw new Error("El contrato del jugador es requerido");
-        }
-        if (jugador.sueldo < 500000) {
-            throw new Error("El sueldo del jugador debe ser de al menos 500,000");
-        }
+        
+        const sueldoOriginal = jugador.sueldo;  
+
         if (jugador.contrato === 0.5) {
-            jugador.sueldo = jugador.sueldo / 2;
+            jugador.sueldoCalculo = sueldoOriginal / 2;
         } else if (jugador.contrato === 1) {
-            jugador.sueldo = jugador.sueldo;
-        }else if (jugador.contrato === 2) {
-            jugador.sueldo = jugador.sueldo * 2;
-        }else if (jugador.contrato === 3) {
-            jugador.sueldo = jugador.sueldo * 3;
-        }else if (jugador.contrato === 4) {
-            jugador.sueldo = jugador.sueldo * 4;
+            jugador.sueldoCalculo = sueldoOriginal;
+        } else if (jugador.contrato === 2) {
+            jugador.sueldoCalculo = sueldoOriginal * 2;
+        } else if (jugador.contrato === 3) {
+            jugador.sueldoCalculo = sueldoOriginal * 3;
+        } else if (jugador.contrato === 4) {
+            jugador.sueldoCalculo = sueldoOriginal * 4;
         }
-        const sueldoTotalJugadores = equipo.jugadores.reduce((totalSueldo, j) => totalSueldo + parseFloat(j.sueldo), 0) + parseFloat(jugador.sueldo);
+
+        jugador.sueldo = jugador.contrato === 0.5 ? sueldoOriginal / 2 : sueldoOriginal;
+
+        const sueldoTotalJugadores = equipo?.jugadores.reduce((totalSueldo, j) => totalSueldo + parseFloat(j.sueldo), 0) + parseFloat(jugador.sueldo);
         if (sueldoTotalJugadores > equipo.banco_fondo) {
             throw new Error("Excediste el límite salarial, no cumples con el Fair play financiero");
         }
@@ -134,39 +144,41 @@ class JugadoresService {
             const valorMercado = edadJugador > 40 ? 500000 :1000000;
             
             if (edadJugador < 18) {
-                clausulaAumento = 0.65;
+                clausulaAumento = 3; 
             } else if (edadJugador < 20) {
-                clausulaAumento = 0.75;
+                clausulaAumento = 3; 
             } else if (edadJugador < 22) {
-                clausulaAumento = 0.85;
+                clausulaAumento = 5; 
             } else if (edadJugador < 24) {
-                clausulaAumento = 1;
+                clausulaAumento = 4; 
             } else if (edadJugador < 26) {
-                clausulaAumento = 1.2;
+                clausulaAumento = 3; 
             } else if (edadJugador < 28) {
-                clausulaAumento = 0.8;
+                clausulaAumento = 2; 
             } else if (edadJugador < 30) {
-                clausulaAumento = 0.7;
+                clausulaAumento = 2; 
             } else if (edadJugador < 32) {
-                clausulaAumento = 0.6;
+                clausulaAumento = 1.5; 
             } else if (edadJugador < 34) {
-                clausulaAumento = 0.5;
+                clausulaAumento = 1.5; 
             } else if (edadJugador < 36) {
-                clausulaAumento = 0.4;
+                clausulaAumento = 1; 
             } else if (edadJugador < 38) {
-                clausulaAumento = 0.2;
+                clausulaAumento = 0.8; 
             } else if (edadJugador < 40) {
-                clausulaAumento = 0;
+                clausulaAumento = 0.7; 
             } else {
-                clausulaAumento = 1;
+                clausulaAumento = 0.6; 
             }
-            const nuevaClausula = edadJugador > 40 ? 500000 : valorMercado * (1 + clausulaAumento)
+            
+            const nuevaClausula = valorMercado * clausulaAumento;
 
             const nuevoJugador = {
                 name: nombreCapitalizado.join(' '),
+                documento: jugador.documento,
                 edad: edadJugador,
                 capitan: 'No',
-                posicion: jugador.posicion.trim(),
+                posicion: jugador.posicion,
                 fecha_nacimiento: jugador.fecha_nacimiento,
                 goles: 0,
                 asistencias: 0,
@@ -174,7 +186,7 @@ class JugadoresService {
                 tarjetas_roja: 0,
                 tarjetas_azul: 0,
                 lesion: 'No',
-                nacionalidad: jugador.nacionalidad.trim(),
+                nacionalidad: jugador.nacionalidad,
                 dorsal: jugador.dorsal,
                 partidos: 0,
                 partidos_individual: ['No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No', 'No'],
@@ -189,19 +201,20 @@ class JugadoresService {
                 suspendido: 'No',
                 jornadas_suspendido: 0,
                 tarjetas_acumuladas: 0,
-                instagram: jugador.instagram.trim(),
+                instagram: jugador.instagram,
                 twitter: 'No definido',
                 equipo: equipo.name,
                 logo: equipo.logo,
                 foto: newFotoUrl,
                 sueldo: jugador.sueldo,
-                sueldoCalculo:jugador.sueldo,
+                sueldoCalculo: jugador.sueldoCalculo,
+                sueldoProximo: sueldoOriginal, 
                 contrato: jugador.contrato,
                 valor_mercado: valorMercado,
                 fecha_inicio: new Date(),
                 fecha_fichaje:'No definido',
                 clausula: nuevaClausula,
-                indemnizacion:jugador.sueldo / 2,
+                indemnizacion:jugador.sueldoCalculo,
                 oferta: [],
                 transferible:'No',
                 libre:'No',
@@ -261,43 +274,17 @@ class JugadoresService {
         if (jugadorIndex === -1) {
             throw new Error("El jugador no existe en el equipo");
         }
-        const dorsalExistente = equipo.jugadores.find(j => j.dorsal == jugador.dorsal && j._id != jugadorId);
-        if (dorsalExistente) {
-            throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
+        if (!jugador.name) {
+            throw new Error("El nombre del jugador es requerido");
         }
-        if (jugador.nacionalidad === 'Seleccionar') {
-            throw new Error("La nacinalidad del jugador es requerida");
+        if (jugador.fecha_nacimiento === 'Invalid date') {
+            throw new Error("La fecha de nacimiento del jugador es requerida");
         }
-        if (jugador.contrato === 'Seleccionar') {
-            throw new Error("El contrato del jugador es requerido");
+        if (jugador.posicion === 'Elija una opción') {
+            throw new Error("La posicion del jugador es requerida");
         }
-        if (jugador.sueldo < 500000) {
-            throw new Error("El sueldo del jugador debe ser de al menos 500,000");
-        }
-        if (jugador.contrato === 0.5) {
-            jugador.sueldo = jugador.sueldo / 2;
-        } else if (jugador.contrato === 1) {
-            jugador.sueldo = jugador.sueldo;
-        }else if (jugador.contrato === 2) {
-            jugador.sueldo = jugador.sueldo * 2;
-        }else if (jugador.contrato === 3) {
-            jugador.sueldo = jugador.sueldo * 3;
-        }else if (jugador.contrato === 4) {
-            jugador.sueldo = jugador.sueldo * 4;
-        }
-
-        const jugadorActual = equipo.jugadores[jugadorIndex];
-        let sueldoTotalJugadores = 0;
-        for (const j of equipo.jugadores) {
-            if (j._id !== jugadorId) {
-                sueldoTotalJugadores += parseFloat(j.sueldo);
-            }
-        }
-        if (equipo.jugadores[jugadorIndex].sueldo !== jugador.sueldo) {
-            sueldoTotalJugadores += parseFloat(jugador.sueldo) - parseFloat(jugadorActual.sueldo);
-        }
-        if (sueldoTotalJugadores > equipo.banco_fondo) {
-            throw new Error("Excediste el límite salarial, no cumples con el Fair play financiero");
+        if (jugador.nacionalidad === 'Elija una opción') {
+            throw new Error("La nacionalidad del jugador es requerida");
         }
 
         try {
@@ -332,12 +319,21 @@ class JugadoresService {
                 }
             }
 
+            const capitalizeFirstLetter = (str) => {
+                return str.toLowerCase().replace(/(?:^|\s)\S/g, function (char) {
+                    return char.toUpperCase();
+                });
+            };
+            const nombreCompleto = jugador.name.trim().split(' ');
+            const nombreCapitalizado = nombreCompleto.map((nombre) => capitalizeFirstLetter(nombre));
+
             const updatedJugador = {
                 ...equipo.jugadores[jugadorIndex],
-                name: jugador.name.trim(),
+                name: nombreCapitalizado.join(' '),
+                documento: equipo.jugadores[jugadorIndex].documento,
                 edad: this.calculateAge(jugador.fecha_nacimiento),
                 capitan: equipo.jugadores[jugadorIndex].capitan,
-                posicion: jugador.posicion.trim(),
+                posicion: jugador.posicion,
                 fecha_nacimiento: jugador.fecha_nacimiento,
                 goles: equipo.jugadores[jugadorIndex].goles,
                 asistencias: equipo.jugadores[jugadorIndex].asistencias,
@@ -345,8 +341,8 @@ class JugadoresService {
                 tarjetas_roja: equipo.jugadores[jugadorIndex].tarjetas_roja,
                 tarjetas_azul: equipo.jugadores[jugadorIndex].tarjetas_azul,
                 lesion: equipo.jugadores[jugadorIndex].lesion,
-                nacionalidad: jugador.nacionalidad.trim(),
-                dorsal: jugador.dorsal,
+                nacionalidad: jugador.nacionalidad,
+                dorsal: equipo.jugadores[jugadorIndex].dorsal,
                 partidos: equipo.jugadores[jugadorIndex].partidos,
                 partidos_individual: equipo.jugadores[jugadorIndex].partidos_individual,
                 gol_partido_individual: equipo.jugadores[jugadorIndex].gol_partido_individual,
@@ -360,19 +356,19 @@ class JugadoresService {
                 suspendido: equipo.jugadores[jugadorIndex].suspendido,
                 jornadas_suspendido: equipo.jugadores[jugadorIndex].jornadas_suspendido,
                 tarjetas_acumuladas: equipo.jugadores[jugadorIndex].tarjetas_acumuladas,
-                instagram: jugador.instagram.trim(),
+                instagram: jugador.instagram,
                 twitter: equipo.jugadores[jugadorIndex].twitter,
                 equipo: equipo.jugadores[jugadorIndex].equipo,
                 logo: equipo.jugadores[jugadorIndex].logo,
                 foto: newFotoUrl || jugador.foto,
-                sueldo: jugador.sueldo,
-                sueldoCalculo: jugador.sueldo,
-                contrato: jugador.contrato,
+                sueldo: equipo.jugadores[jugadorIndex].sueldo,
+                sueldoCalculo: equipo.jugadores[jugadorIndex].sueldoCalculo,
+                contrato: equipo.jugadores[jugadorIndex].contrato,
                 valor_mercado: equipo.jugadores[jugadorIndex].valor_mercado,
                 fecha_inicio: equipo.jugadores[jugadorIndex].fecha_inicio,
                 fecha_fichaje: equipo.jugadores[jugadorIndex].fecha_fichaje,
                 clausula: equipo.jugadores[jugadorIndex].clausula,
-                indemnizacion: jugador.sueldo / 2,
+                indemnizacion: equipo.jugadores[jugadorIndex].indemnizacion,
                 oferta: equipo.jugadores[jugadorIndex].oferta,
                 transferible: equipo.jugadores[jugadorIndex].transferible,
                 libre: equipo.jugadores[jugadorIndex].libre,
@@ -867,55 +863,72 @@ class JugadoresService {
         if (jugadorIndex === -1) {
             throw new Error("El jugador no existe en el equipo");
         }
-        if (jugador.contrato === 'Seleccionar') {
+        if (!jugador.sueldo) {
+            throw new Error("El sueldo del jugador es requerido");
+        }
+        if (jugador.contrato === 'Elija una opción') {
             throw new Error("El contrato del jugador es requerido");
         }
-        if (jugador.sueldo < equipo.jugadores[jugadorIndex].sueldoCalculo) {
-            throw new Error(`El sueldo del jugador debe ser mayor o igual a ${equipo.jugadores[jugadorIndex].sueldoCalculo}`);
+        if (jugador.sueldo < equipo.jugadores[jugadorIndex].sueldoProximo) {
+            throw new Error(`El sueldo del jugador debe ser mayor o igual a $${equipo.jugadores[jugadorIndex].sueldoProximo}`);
         }
-        if (jugador.contrato === 0.5) {
-            jugador.sueldo = jugador.sueldo / 2;
-        } else if (jugador.contrato === 1) {
-            jugador.sueldo = jugador.sueldo;
-        }else if (jugador.contrato === 2) {
-            jugador.sueldo = jugador.sueldo * 2;
-        }else if (jugador.contrato === 3) {
-            jugador.sueldo = jugador.sueldo * 3;
-        }else if (jugador.contrato === 4) {
-            jugador.sueldo = jugador.sueldo * 4;
+
+        const sueldoOriginal = jugador.sueldo;
+        const contratoAnterior = equipo.jugadores[jugadorIndex].contrato;
+        jugador.contrato += contratoAnterior;
+    
+        switch (jugador.contrato) {
+            case 0.5:
+                jugador.sueldoCalculo = sueldoOriginal / 2;
+                break;
+            case 1:
+                jugador.sueldoCalculo = sueldoOriginal;
+                break;
+            case 2:
+                jugador.sueldoCalculo = sueldoOriginal * 2;
+                break;
+            case 3:
+                jugador.sueldoCalculo = sueldoOriginal * 3;
+                break;
+            case 4:
+                jugador.sueldoCalculo = sueldoOriginal * 4;
+                break;
+            default:
+                jugador.sueldoCalculo = sueldoOriginal; 
+                break;
         }
+        
         const sueldoAnterior = equipo.jugadores[jugadorIndex].sueldo;
         equipo.banco_fondo -= sueldoAnterior;
-
+        
         const jugadorActual = equipo.jugadores[jugadorIndex];
         let sueldoTotalJugadores = 0;
+        
         for (const j of equipo.jugadores) {
             if (j._id !== jugadorId) {
                 sueldoTotalJugadores += parseFloat(j.sueldo);
             }
         }
-        if (equipo.jugadores[jugadorIndex].sueldo !== jugador.sueldo) {
+        
+        if (jugadorActual.sueldo !== jugador.sueldo) {
             sueldoTotalJugadores += parseFloat(jugador.sueldo) - parseFloat(jugadorActual.sueldo);
         }
+        
         if (sueldoTotalJugadores > equipo.banco_fondo) {
             throw new Error("Excediste el límite salarial, no cumples con el Fair play financiero");
         }
 
         try {
-            let newFotoUrl = equipo.jugadores[jugadorIndex].foto;
-            if (jugador.foto) {
-                const result = await this.equipoCloudinary.claudinaryUploader(jugador.foto);
-                newFotoUrl = result.secure_url;
-            }
             const updatedJugador = {
                 sueldo: jugador.sueldo,
                 contrato: jugador.contrato,
+                sueldoCalculo: jugador.sueldoCalculo,
+                sueldoProximo: sueldoOriginal, 
             };
             equipo.jugadores[jugadorIndex].sueldo = updatedJugador.sueldo;
             equipo.jugadores[jugadorIndex].contrato = updatedJugador.contrato;
-            if (jugador.foto) {
-                equipo.jugadores[jugadorIndex].foto = newFotoUrl;
-            }
+            equipo.jugadores[jugadorIndex].sueldoCalculo = updatedJugador.sueldoCalculo;
+            equipo.jugadores[jugadorIndex].sueldoProximo = updatedJugador.sueldoProximo;
             await equipo.save();
             return equipo;
         } catch (err) {
@@ -1043,6 +1056,9 @@ class JugadoresService {
         if (jugadorIndex === -1) {
             throw new Error("El jugador no existe en el equipo");
         }
+        if(!jugador.dorsal){
+            throw new Error("El dorsal del jugador es requerido");
+        }
         const dorsalExistente = equipo.jugadores.find(j => j.dorsal == jugador.dorsal);
         if (dorsalExistente) {
             throw new Error(`Ya hay un jugador en este equipo con el dorsal ${jugador.dorsal}. El jugador que tiene este dorsal es ${dorsalExistente.name}.`);
@@ -1139,17 +1155,18 @@ class JugadoresService {
         if (jugadorIndex === -1) {
             throw new Error("El jugador no existe en el equipo");
         }
+        const jugador = equipo.jugadores[jugadorIndex];
         if (!oferta.sueldo) {
             throw new Error("El sueldo del jugador es requerido");
         }
-        if (!oferta.precio) {
-            throw new Error("La oferta del jugador es requerida");
+        if (oferta.sueldo < jugador.sueldoProximo) {
+            throw new Error(`El sueldo propuesto debe ser mayor o igual a ${jugador.sueldoProximo}`);
         }
-        if (oferta.contrato === 'Seleccionar') {
+        if (oferta.contrato === 'Elija una opción') {
             throw new Error("El contrato del jugador es requerido");
         }
-        if (oferta.sueldo < equipo.jugadores[jugadorIndex].sueldoCalculo) {
-            throw new Error(`El sueldo del jugador debe ser mayor o igual a ${equipo.jugadores[jugadorIndex].sueldoCalculo}`);
+        if (!oferta.precio) {
+            throw new Error("La oferta del jugador es requerida");
         }
         if (oferta.precio < equipo.jugadores[jugadorIndex].valor_mercado) {
             throw new Error(`El precio del jugador debe ser mayor o igual a ${equipo.jugadores[jugadorIndex].valor_mercado} que es su valor en el mercado`);
@@ -1190,6 +1207,12 @@ class JugadoresService {
         if (ofertaIndex === -1) {
             throw new Error("La oferta no existe en el jugador");
         }
+        if(!oferta.precio && oferta.respuesta !== 'Rechazar_oferta' && oferta.respuesta !== 'Rechazar_prestamo'){
+            throw new Error("La oferta del jugador es requerida");
+        }
+        if(oferta.contrato === 'Elija una opción'){
+            throw new Error("El contrato del jugador es requerido");
+        }
         const updatedOferta = {
             ...equipo.jugadores[jugadorIndex].oferta[ofertaIndex],
             ...oferta,
@@ -1198,7 +1221,7 @@ class JugadoresService {
         nuevasOfertas[ofertaIndex] = updatedOferta;
 
         const result = await this.jugadores.modelOfertasEdit(equipoId, jugadorId, nuevasOfertas);
-        return updatedOferta;
+        return result;
     }
 
     eliminarOferta = async (equipoId, jugadorId, ofertaId) => {

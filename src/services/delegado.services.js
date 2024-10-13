@@ -6,6 +6,12 @@ class DelegadoService {
     }
 
     crearDelegado = async (equipoId, delegado) => {
+        if(!delegado.name){
+            throw new Error("El nombre del delegado es requerido");
+        }
+        if(!delegado.telefono){
+            throw new Error("El telefono del delegado es requerido");
+        }
         const equipo = await this.equipos.modelEquiposGetByID(equipoId)
         if (!equipo) {
             throw new Error(`No se encontró el equipo con el _id ${equipoId}`);

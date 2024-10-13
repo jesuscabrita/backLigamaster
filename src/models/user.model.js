@@ -12,8 +12,6 @@ const userSchema = new Schema(
         role: { type: String },
         password: { type: String },
         equipo: { type: String },
-        categoria: { type: String },
-        subCategoria: { type: String },
         foto: { type: String },
         tipo: { type: String },
         last_connection: { type: Date },
